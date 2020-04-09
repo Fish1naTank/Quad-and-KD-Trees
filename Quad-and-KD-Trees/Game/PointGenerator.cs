@@ -7,15 +7,15 @@ namespace Quad_and_KD_Trees
     class PointGenerator
     {
         public enum Distrabution { Random, Cloud };
-        public Distrabution DistrabutionType;
-        public int PointCount;
+        public Distrabution distrabutionType;
+        public int pointCount;
 
         private Point[] _points;
 
         public PointGenerator(int pPointCount, Distrabution pDistrabutionType = Distrabution.Random)
         {
-            PointCount = pPointCount;
-            DistrabutionType = pDistrabutionType;
+            pointCount = pPointCount;
+            distrabutionType = pDistrabutionType;
         }
 
         public void Generate(Vector2i pSpawnRange)
@@ -32,10 +32,10 @@ namespace Quad_and_KD_Trees
                 }
             }
 
-            _points = new Point[PointCount];
+            _points = new Point[pointCount];
 
             //add create new points
-            switch (DistrabutionType)
+            switch (distrabutionType)
             {
                 case Distrabution.Random:
                     GenerateRandomPoints(pSpawnRange);
@@ -56,7 +56,7 @@ namespace Quad_and_KD_Trees
             foreach(Point p in _points)
             {
                 p.FillColor = pColor;
-                pGameLoop.Window.Draw(p);
+                pGameLoop.window.Draw(p);
             }
         }
 

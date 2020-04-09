@@ -19,10 +19,10 @@ namespace Quad_and_KD_Trees
         {
             if (consoleFont == null) return;
 
-            string totalTimeElapsedStr = pGameLoop.GameTime.TotalTimeElapesd.ToString("0.000");
-            string deltaTimeStr = pGameLoop.GameTime.DeltaTime.ToString("0.00000");
+            string totalTimeElapsedStr = pGameLoop.gameTime.TotalTimeElapesd.ToString("0.000");
+            string deltaTimeStr = pGameLoop.gameTime.DeltaTime.ToString("0.00000");
 
-            float fps = 1 / pGameLoop.GameTime.DeltaTime;
+            float fps = 1 / pGameLoop.gameTime.DeltaTime;
             string fpsStr = fps.ToString("0.00");
 
             Text timeText = new Text(totalTimeElapsedStr, consoleFont, 14);
@@ -37,9 +37,9 @@ namespace Quad_and_KD_Trees
             fpsText.Position = new Vector2f(4, 48);
             fpsText.Color = pFontColor;
 
-            pGameLoop.Window.Draw(timeText);
-            pGameLoop.Window.Draw(deltaTimeText);
-            pGameLoop.Window.Draw(fpsText);
+            pGameLoop.window.Draw(timeText);
+            pGameLoop.window.Draw(deltaTimeText);
+            pGameLoop.window.Draw(fpsText);
         }
     }
 }

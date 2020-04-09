@@ -24,11 +24,7 @@ namespace Quad_and_KD_Trees
             get { return _deltaTime; }
         }
 
-        public float TotalTimeElapesd
-        {
-            get;
-            private set;
-        }
+        public float TotalTimeElapesd { get; private set; }
 
         public GameTime()
         {

@@ -11,30 +11,18 @@ namespace Quad_and_KD_Trees
         public const int TARGET_FPS = 60;
         public const float TIME_UNTIL_UPDATE = 1f / TARGET_FPS;
 
-        public RenderWindow Window
-        {
-            get;
-            protected set;
-        }
+        public RenderWindow window { get; protected set; }
 
-        public GameTime GameTime
-        {
-            get;
-            protected set;
-        }
+        public GameTime gameTime { get; protected set; }
 
-        public Color WindowClearColor
-        {
-            get;
-            protected set;
-        }
+        public Color windowClearColor { get; protected set; }
 
         protected GameLoop(uint pWindowWidth, uint pWindowHeight, string pWindowTitle, Color pWindowClearColor)
         {
-            this.WindowClearColor = pWindowClearColor;
-            this.Window = new RenderWindow(new VideoMode(pWindowWidth, pWindowHeight), pWindowTitle);
-            this.GameTime = new GameTime();
-            Window.Closed += WindowClosed;
+            this.windowClearColor = pWindowClearColor;
+            this.window = new RenderWindow(new VideoMode(pWindowWidth, pWindowHeight), pWindowTitle);
+            this.gameTime = new GameTime();
+            window.Closed += WindowClosed;
         }
 
         public void Run()
@@ -51,9 +39,9 @@ namespace Quad_and_KD_Trees
             Clock clock = new Clock();
 
             //game loop
-            while(Window.IsOpen)
+            while(window.IsOpen)
             {
-                Window.DispatchEvents();
+                window.DispatchEvents();
 
                 //calculate time
                 totalTimeElapsed = clock.ElapsedTime.AsSeconds();
@@ -65,15 +53,15 @@ namespace Quad_and_KD_Trees
                 if(totalTimeBeforeUpdate >= TIME_UNTIL_UPDATE)
                 {
                     //update game time
-                    GameTime.Update(totalTimeBeforeUpdate, clock.ElapsedTime.AsSeconds());
+                    gameTime.Update(totalTimeBeforeUpdate, clock.ElapsedTime.AsSeconds());
                     totalTimeBeforeUpdate = 0;
 
-                    Update(GameTime);
+                    Update(gameTime);
 
                     //render
-                    Window.Clear(WindowClearColor);
-                    Draw(GameTime);
-                    Window.Display();
+                    window.Clear(windowClearColor);
+                    Draw(gameTime);
+                    window.Display();
                 }
             }
         }
@@ -85,7 +73,7 @@ namespace Quad_and_KD_Trees
 
         private void WindowClosed(object sender, EventArgs e)
         {
-            Window.Close();
+            window.Close();
         }
     }
 }

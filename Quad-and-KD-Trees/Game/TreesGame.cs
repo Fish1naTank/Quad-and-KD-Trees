@@ -12,7 +12,8 @@ namespace Quad_and_KD_Trees
         public const uint DEFAULT_WINDOW_HEIGHT = 720;
         public const string WINDOW_TITLE = "Quad and KD Trees";
 
-        public PointGenerator PointGenerator;
+        public PointGenerator pointGenerator;
+        public QuadTree quadTree;
 
         public TreesGame() : base(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT, WINDOW_TITLE, Color.Black)
         {
@@ -26,8 +27,16 @@ namespace Quad_and_KD_Trees
 
         public override void Initialize()
         {
-            PointGenerator = new PointGenerator(400);
-            PointGenerator.Generate((Vector2i)Window.Size);
+            pointGenerator = new PointGenerator(500);
+            pointGenerator.Generate((Vector2i)window.Size);
+
+            Boundry quadTreeBoundry = new Boundry(window.Size.X / 2, window.Size.Y / 2, window.Size.X, window.Size.Y);
+            quadTree = new QuadTree(quadTreeBoundry, 1);
+
+            foreach(Point p in pointGenerator.GetPoints())
+            {
+                quadTree.Insert(p);
+            }
         }
 
         public override void Update(GameTime pGameTime)
@@ -37,7 +46,8 @@ namespace Quad_and_KD_Trees
         public override void Draw(GameTime pGameTime)
         {
             DebugUtility.DrawPreformanceData(this, Color.White);
-            PointGenerator.DrawPoints(this, Color.White);
+            pointGenerator.DrawPoints(this, Color.White);
+            quadTree.DrawTree(window, Color.White);
         }
     }
 }

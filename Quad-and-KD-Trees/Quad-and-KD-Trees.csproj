@@ -54,9 +54,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GameLoop\GameTime.cs" />
+    <Compile Include="Game\Boundry.cs" />
     <Compile Include="Game\DebugUtility.cs" />
     <Compile Include="Game\Point.cs" />
     <Compile Include="Game\PointGenerator.cs" />
+    <Compile Include="Game\QuadTree.cs" />
     <Compile Include="Game\TreesGame.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="GameLoop\GameLoop.cs" />
