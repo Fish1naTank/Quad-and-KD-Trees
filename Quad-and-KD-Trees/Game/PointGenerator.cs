@@ -27,7 +27,7 @@ namespace Quad_and_KD_Trees
                 {
                     if(p != null)
                     {
-                        p.Dispose();
+                        p.userData.Dispose();
                     }
                 }
             }
@@ -51,12 +51,20 @@ namespace Quad_and_KD_Trees
             return _points;
         }
 
-        public void DrawPoints(GameLoop pGameLoop, Color pColor)
+        public void DrawPoints(RenderWindow pWindow, Color pColor)
         {
             foreach(Point p in _points)
             {
-                p.FillColor = pColor;
-                pGameLoop.window.Draw(p);
+                if (p.userData == null)
+                {
+                    CircleShape point = new CircleShape(1);
+                    p.userData = point;
+                }
+
+                p.userData.Position = p.position;
+                p.userData.FillColor = pColor;
+
+                pWindow.Draw(p.userData);
             }
         }
 

@@ -1,16 +1,21 @@
-﻿using System;
-using SFML.System;
+﻿using SFML.System;
 using SFML.Graphics;
 
 namespace Quad_and_KD_Trees
 {
-    class Point : CircleShape
+    class Point
     {
-        private float _radius = 1;
-        public Point(Vector2f pPosition) : base()
+        public Vector2f position;
+        public Shape userData;
+        public Point(Vector2f pPosition)
         {
-            Position = pPosition;
-            Radius = _radius;
+            position = pPosition;
+        }
+
+        public Point(Vector2f pPosition, Shape pUserData)
+        {
+            userData = pUserData;
+            position = pPosition;
         }
     }
 }

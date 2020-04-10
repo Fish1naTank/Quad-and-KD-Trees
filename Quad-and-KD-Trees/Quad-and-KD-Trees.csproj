@@ -56,6 +56,7 @@
     <Compile Include="GameLoop\GameTime.cs" />
     <Compile Include="Game\Boundry.cs" />
     <Compile Include="Game\DebugUtility.cs" />
+    <Compile Include="Game\MouseBox.cs" />
     <Compile Include="Game\Point.cs" />
     <Compile Include="Game\PointGenerator.cs" />
     <Compile Include="Game\QuadTree.cs" />
