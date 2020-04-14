@@ -17,5 +17,7 @@ namespace Quad_and_KD_Trees
             userData = pUserData;
             position = pPosition;
         }
+
+        //collide something
     }
 }

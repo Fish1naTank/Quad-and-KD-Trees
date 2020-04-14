@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using SFML.Graphics;
 using SFML.System;
 
@@ -10,7 +11,7 @@ namespace Quad_and_KD_Trees
         public Distrabution distrabutionType;
         public int pointCount;
 
-        private Point[] _points;
+        private List<Point> _points;
 
         public PointGenerator(int pPointCount, Distrabution pDistrabutionType = Distrabution.Random)
         {
@@ -32,7 +33,7 @@ namespace Quad_and_KD_Trees
                 }
             }
 
-            _points = new Point[pointCount];
+            _points = new List<Point>(pointCount);
 
             //add create new points
             switch (distrabutionType)
@@ -46,7 +47,7 @@ namespace Quad_and_KD_Trees
             }
         }
 
-        public Point[] GetPoints()
+        public List<Point> GetPoints()
         {
             return _points;
         }
@@ -72,10 +73,10 @@ namespace Quad_and_KD_Trees
         {
             Random rand = new Random();
 
-            for (int i = 0; i < _points.Length; i++)
+            for (int i = 0; i < _points.Capacity; i++)
             {
                 Vector2f pos = new Vector2f(rand.Next(0, pSpawnRange.X), rand.Next(0, pSpawnRange.Y));
-                _points[i] = new Point(pos);
+                _points.Add(new Point(pos));
             }
         }
         

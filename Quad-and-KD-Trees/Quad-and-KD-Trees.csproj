@@ -51,11 +51,13 @@
     <Reference Include="sfml-window">
       <HintPath>..\..\..\SFML.Net-2.4-32-bit\SFML.Net-2.4\lib\sfml-window.dll</HintPath>
     </Reference>
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GameLoop\GameTime.cs" />
     <Compile Include="Game\Boundry.cs" />
     <Compile Include="Game\DebugUtility.cs" />
+    <Compile Include="Game\KDTree.cs" />
     <Compile Include="Game\MouseBox.cs" />
     <Compile Include="Game\Point.cs" />
     <Compile Include="Game\PointGenerator.cs" />

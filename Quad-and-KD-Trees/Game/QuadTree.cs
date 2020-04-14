@@ -2,6 +2,7 @@
 using SFML.System;
 using SFML.Graphics;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Quad_and_KD_Trees
 {
@@ -130,7 +131,7 @@ namespace Quad_and_KD_Trees
 
             //give all our points to the 
 
-            foreach(Point p in points)
+            foreach(Point p in points.ToList())
             {
                 if (childTrees[0].Insert(p) || childTrees[1].Insert(p)
                         || childTrees[2].Insert(p) || childTrees[3].Insert(p))
@@ -138,6 +139,7 @@ namespace Quad_and_KD_Trees
                     continue;
                 }
             }
+
 
             subdivided = true;
         }

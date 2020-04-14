@@ -15,6 +15,7 @@ namespace Quad_and_KD_Trees
 
         public PointGenerator pointGenerator;
         public QuadTree quadTree;
+        public KDTree kdTree;
 
         MouseBox mouseBox;
 
@@ -30,16 +31,26 @@ namespace Quad_and_KD_Trees
 
         public override void Initialize()
         {
-            pointGenerator = new PointGenerator(500);
+            pointGenerator = new PointGenerator(10);
             pointGenerator.Generate((Vector2i)window.Size);
 
+            /**
+            //QuadTree
             Boundry quadTreeBoundry = new Boundry(window.Size.X / 2, window.Size.Y / 2, window.Size.X, window.Size.Y);
             quadTree = new QuadTree(quadTreeBoundry, 1);
 
+            //add points to tree
             foreach(Point p in pointGenerator.GetPoints())
             {
                 quadTree.Insert(p);
             }
+            /**/
+
+            /**/
+            //KDTree
+            kdTree = new KDTree(pointGenerator.GetPoints(), 1);
+            kdTree.GenerateTree();
+            /**/
 
             mouseBox = new MouseBox(new Vector2f(0, 0), new Vector2f(100, 100));
         }
@@ -48,14 +59,16 @@ namespace Quad_and_KD_Trees
         {
             mouseBox.Update(window);
 
-            mouseBox.pointsFound = quadTree.QueryRectangelRange(mouseBox);
+            //mouseBox.pointsFound = quadTree.QueryRectangelRange(mouseBox);
         }
 
         public override void Draw(GameTime pGameTime)
         {
-            DebugUtility.DrawPreformanceData(this, Color.White);
-            quadTree.DrawTree(window, Color.White);
-            quadTree.DrawPoints(window, Color.White);
+            DebugUtility.DrawPreformanceData(this, Color.Red);
+            //quadTree.DrawTree(window, Color.White);
+            //quadTree.DrawPoints(window, Color.White);
+            kdTree.DrawTree(window, Color.White);
+            //kdTree.DrawPoints(window, Color.White);
             mouseBox.Draw(window, Color.Green);
         }
     }
