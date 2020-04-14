@@ -60,6 +60,7 @@ namespace Quad_and_KD_Trees
             mouseBox.Update(window);
 
             //mouseBox.pointsFound = quadTree.QueryRectangelRange(mouseBox);
+            mouseBox.pointsFound = kdTree.QueryRectangelRange(mouseBox);
         }
 
         public override void Draw(GameTime pGameTime)
@@ -67,8 +68,9 @@ namespace Quad_and_KD_Trees
             DebugUtility.DrawPreformanceData(this, Color.Red);
             //quadTree.DrawTree(window, Color.White);
             //quadTree.DrawPoints(window, Color.White);
-            kdTree.DrawTree(window, Color.White);
+            kdTree.DrawSplitLines(window, (Vector2f)window.Size, Color.White, new Vector2f(0,0));
             //kdTree.DrawPoints(window, Color.White);
+            pointGenerator.DrawPoints(window, Color.Red);
             mouseBox.Draw(window, Color.Green);
         }
     }

@@ -58,7 +58,8 @@ namespace Quad_and_KD_Trees
             {
                 if (p.userData == null)
                 {
-                    CircleShape point = new CircleShape(1);
+                    CircleShape point = new CircleShape(3);
+                    point.Origin = new Vector2f(point.Radius, point.Radius);
                     p.userData = point;
                 }
 
