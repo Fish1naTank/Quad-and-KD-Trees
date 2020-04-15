@@ -10,7 +10,7 @@ namespace Quad_and_KD_Trees
         public RectBoundry(Vector2f pPosition, Vector2f pSize)
         {
             position = pPosition;
-            size = pSize * 0.5f;
+            size = pSize;
         }
 
         public RectBoundry(float x, float y, float w, float h)
@@ -38,7 +38,7 @@ namespace Quad_and_KD_Trees
                 float[] RectSidePos = new float[4] { RectPos.X - RectSize.X, RectPos.X + RectSize.X,
                                                     RectPos.Y - RectSize.Y, RectPos.Y + RectSize.Y };
 
-                Vector2f closestEdge = new Vector2f();
+                Vector2f closestEdge = CirclePos;
 
                 //closest edge
                 if (CirclePos.X < RectSidePos[0]) closestEdge.X = RectSidePos[0];       //left
@@ -52,8 +52,7 @@ namespace Quad_and_KD_Trees
                 float distance = (float)Math.Sqrt((distX * distX) + (distY * distY));
 
                 //collision
-                CircleBoundry circleBoundry = (CircleBoundry)pBoundry;
-                if (distance <= circleBoundry.size)
+                if (distance <= pBoundry.size.X)
                 {
                     return true;
                 }

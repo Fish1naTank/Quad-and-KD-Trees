@@ -6,23 +6,21 @@ namespace Quad_and_KD_Trees
 {
     class CircleBoundry : Boundry
     {
-        public new float size;
-        //size.x = w / 2
         public CircleBoundry(Vector2f pPosition, float pRadius)
         {
             position = pPosition;
-            size = pRadius;
+            size = new Vector2f(pRadius, pRadius);
         }
 
         public CircleBoundry(float x, float y, float pRadius)
         {
             position = new Vector2f(x, y);
-            size = pRadius;
+            size = new Vector2f(pRadius, pRadius);
         }
 
         public override bool Contains(Vector2f pPoint)
         {
-            if( dist(position, pPoint) <= size)
+            if( dist(position, pPoint) <= size.X)
             {
                 return true;
             }
@@ -33,8 +31,7 @@ namespace Quad_and_KD_Trees
         {
             if (pBoundry is CircleBoundry)
             {
-                CircleBoundry pOther = (CircleBoundry)pBoundry;
-                if (dist(position, pOther.position) <= size + pOther.size)
+                if (dist(position, pBoundry.position) <= size.X + pBoundry.size.X)
                 {
                     return true;
                 }
@@ -42,6 +39,7 @@ namespace Quad_and_KD_Trees
             }
             else if (pBoundry is RectBoundry)
             {
+                //check sides
                 Vector2f CirclePos = position;
                 Vector2f RectPos = pBoundry.position;
                 Vector2f RectSize = pBoundry.size;
@@ -51,34 +49,32 @@ namespace Quad_and_KD_Trees
                 float[] RectSidePos = new float[4] { RectPos.X - RectSize.X, RectPos.X + RectSize.X, 
                                                     RectPos.Y - RectSize.Y, RectPos.Y + RectSize.Y };
 
-                Vector2f closestEdge = new Vector2f();
+                Vector2f closestEdge = CirclePos;
 
                 //closest edge
                 if (CirclePos.X < RectSidePos[0]) closestEdge.X = RectSidePos[0];       //left
                 else if (CirclePos.X > RectSidePos[1]) closestEdge.X = RectSidePos[1];  //right
+
                 if (CirclePos.Y < RectSidePos[2]) closestEdge.Y = RectSidePos[2];       //top
                 else if (CirclePos.Y > RectSidePos[3]) closestEdge.Y = RectSidePos[3];  //bot
 
                 //distance from closest edges
-                float distX = CirclePos.X - closestEdge.X;
-                float distY = CirclePos.Y - closestEdge.Y;
-                float distance = (float)Math.Sqrt((distX * distX) + (distY * distY));
+                float distance = (float)dist(CirclePos, closestEdge);
 
                 //collision
-                if (distance <= size)
+                if (distance <= size.X)
                 {
                     return true;
                 }
                 return false;
             }
-
-            throw new NotImplementedException();
+            return false;
         }
 
         public override void Draw(RenderWindow pWindow, Color pColor)
         {
-            CircleShape boundry = new CircleShape(size);
-            boundry.Origin = new Vector2f(size, size);
+            CircleShape boundry = new CircleShape(size.X);
+            boundry.Origin = size;
             boundry.Position = position;
             boundry.FillColor = Color.Transparent;
             boundry.OutlineThickness = 0.5f;

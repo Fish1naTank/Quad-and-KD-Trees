@@ -15,7 +15,7 @@ namespace Quad_and_KD_Trees
             consoleFont = new Font(CONSOLE_FONT_PATH);
         }
 
-        public static void DrawPreformanceData(GameLoop pGameLoop, Color pFontColor)
+        public static void DrawPreformanceData(GameLoop pGameLoop, RenderWindow pWindow, String pConsoleText, Color pFontColor)
         {
             if (consoleFont == null) return;
 
@@ -37,9 +37,14 @@ namespace Quad_and_KD_Trees
             fpsText.Position = new Vector2f(4, 48);
             fpsText.Color = pFontColor;
 
+            Text ConsoleMessageText = new Text(pConsoleText, consoleFont, 16);
+            ConsoleMessageText.Position = new Vector2f(4, pWindow.Size.Y - 20);
+            ConsoleMessageText.Color = pFontColor;
+
             pGameLoop.window.Draw(timeText);
             pGameLoop.window.Draw(deltaTimeText);
             pGameLoop.window.Draw(fpsText);
+            pGameLoop.window.Draw(ConsoleMessageText);
         }
     }
 }

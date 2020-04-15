@@ -50,7 +50,20 @@ namespace Quad_and_KD_Trees
             //else we need to ask for help (subdivide)
             else
             {
-                if(!subdivided) Subdivide();
+                if (!subdivided)
+                {
+                    //check if the points we have will stop us from subdividing
+                    List<Point> allPoints = points;
+                    allPoints.Add(pPoint);
+                    Vector2f largestSize = getLargestPointSize(allPoints);
+                    if(largestSize.X * 2 > boundry.size.X || largestSize.Y * 2 > boundry.size.Y)
+                    {
+                        points.Add(pPoint);
+                        return true;
+                    }
+
+                    Subdivide();
+                }
 
                 return (childTrees[0].Insert(pPoint) || childTrees[1].Insert(pPoint)
                         || childTrees[2].Insert(pPoint) || childTrees[3].Insert(pPoint));
@@ -63,7 +76,10 @@ namespace Quad_and_KD_Trees
             List<Point> found = pFound;
             if (found == null) found = new List<Point>();
 
-            if (!pRange.Intersects(boundry)) return found;
+            //adjust range for our data set
+            Boundry range = rangeAdjust(pRange);
+
+            if (!range.Intersects(boundry)) return found;
 
             if(!subdivided)
             {
@@ -76,6 +92,8 @@ namespace Quad_and_KD_Trees
             {
                 foreach(QuadTree childTree in childTrees)
                 {
+                    //recur
+                    //pass the original search range
                     childTree.QueryRange(pRange, found);
                 }
             }
@@ -122,8 +140,6 @@ namespace Quad_and_KD_Trees
 
         private void Subdivide()
         {
-            subdivided = true;
-
             childTrees = new QuadTree[4];
 
             // 0 | 1
@@ -135,8 +151,10 @@ namespace Quad_and_KD_Trees
             childTrees[2] = new QuadTree(new RectBoundry(boundry.position.X - offset.X, boundry.position.Y + offset.Y, boundry.size.X, boundry.size.Y), capacity);
             childTrees[3] = new QuadTree(new RectBoundry(boundry.position.X + offset.X, boundry.position.Y + offset.Y, boundry.size.X, boundry.size.Y), capacity);
 
+            subdivided = true;
+
             //give all our points to the child trees
-            foreach(Point p in points.ToList())
+            foreach (Point p in points.ToList())
             {
                 if (childTrees[0].Insert(p) || childTrees[1].Insert(p)
                         || childTrees[2].Insert(p) || childTrees[3].Insert(p))
@@ -144,6 +162,53 @@ namespace Quad_and_KD_Trees
                     continue;
                 }
             }
+        }
+
+        private Boundry rangeAdjust(Boundry pRange)
+        {
+            if (points != null)
+            {
+                Vector2f sizeIncrease = getLargestPointSize(points);
+
+                if(sizeIncrease != new Vector2f(0,0))
+                {
+                    float largerSize = (float)length(sizeIncrease);
+                    sizeIncrease = new Vector2f(largerSize, largerSize) / 2;
+
+                    if(pRange is CircleBoundry)
+                    {
+                        return new CircleBoundry(pRange.position, pRange.size.X + sizeIncrease.X);
+                    }
+                    else if (pRange is RectBoundry)
+                    {
+                        return new RectBoundry(pRange.position, pRange.size + sizeIncrease);
+                    }
+                }
+            }
+
+            return pRange;
+        }
+
+        private Vector2f getLargestPointSize(List<Point> points)
+        {
+            Vector2f largestSize = new Vector2f(0, 0);
+            foreach (Point point in points)
+            {
+                if (point != null)
+                {
+                    Vector2f pointSize = point.GetSize();
+                    if (pointSize.X > largestSize.X || pointSize.Y > largestSize.Y)
+                    {
+                        largestSize = pointSize;
+                    }
+                }
+            }
+            return largestSize;
+        }
+
+        private double length(Vector2f v)
+        {
+            return Math.Sqrt(v.X * v.X + v.Y * v.Y);
         }
     }
 }

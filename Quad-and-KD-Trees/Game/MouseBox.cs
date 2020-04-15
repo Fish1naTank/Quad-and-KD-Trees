@@ -5,23 +5,23 @@ using System.Collections.Generic;
 
 namespace Quad_and_KD_Trees
 {
-    class MouseBox : RectBoundry
+    class MouseBox
     {
+        public Boundry boundry;
         public List<Point> possiblePoints;
         private List<Point> _pointsFound;
 
-        public MouseBox(Vector2f pPosition, Vector2f pSize) : base(pPosition, pSize)
+        public MouseBox(Boundry pBoundry)
         {
-            position = pPosition;
-            size = pSize;
+            boundry = pBoundry;
         }
 
         public void Update(RenderWindow pGameWindow)
         {
-            position = (Vector2f)Mouse.GetPosition(pGameWindow);
+            boundry.position = (Vector2f)Mouse.GetPosition(pGameWindow);
         }
 
-        public override void Draw(RenderWindow pWindow, Color pColor)
+        public void Draw(RenderWindow pWindow, Color pColor)
         {
             drawBoundry(pWindow, pColor);
             drawPoints(pWindow, pColor);
@@ -40,7 +40,7 @@ namespace Quad_and_KD_Trees
             {
                 if (!pCheckPossiblePoints)
                 {
-                    if (Contains(p.position))
+                    if (boundry.Intersects(p.Boundry()))
                     {
                         _pointsFound.Add(p);
                     }
@@ -54,14 +54,28 @@ namespace Quad_and_KD_Trees
 
         private void drawBoundry(RenderWindow pWindow, Color pColor)
         {
-            RectangleShape boundry = new RectangleShape(size * 2);
-            boundry.Origin = size;
-            boundry.Position = position;
-            boundry.FillColor = Color.Transparent;
-            boundry.OutlineThickness = 0.6f;
-            boundry.OutlineColor = pColor;
+            if (boundry is CircleBoundry)
+            {
+                CircleShape circleBoundry = new CircleShape(boundry.size.X);
+                circleBoundry.Origin = boundry.size;
+                circleBoundry.Position = boundry.position;
+                circleBoundry.FillColor = Color.Transparent;
+                circleBoundry.OutlineThickness = 0.6f;
+                circleBoundry.OutlineColor = pColor;
 
-            pWindow.Draw(boundry);
+                pWindow.Draw(circleBoundry);
+            }
+            else if (boundry is RectBoundry)
+            {
+                RectangleShape Rectboundry = new RectangleShape(boundry.size);
+                Rectboundry.Origin = boundry.size;
+                Rectboundry.Position = boundry.position;
+                Rectboundry.FillColor = Color.Transparent;
+                Rectboundry.OutlineThickness = 0.6f;
+                Rectboundry.OutlineColor = pColor;
+
+                pWindow.Draw(Rectboundry);
+            }
         }
 
         private void drawPoints(RenderWindow pWindow, Color pColor)
@@ -72,6 +86,10 @@ namespace Quad_and_KD_Trees
                 if (p == null || p.userData == null) return;
 
                 if(!p.colliding) p.userData.FillColor = pColor;
+                else
+                {
+                    p.userData.FillColor = Color.Cyan;
+                }
 
                 pWindow.Draw(p.userData);
             }

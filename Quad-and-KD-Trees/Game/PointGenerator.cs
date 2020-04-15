@@ -29,7 +29,8 @@ namespace Quad_and_KD_Trees
             {
                 if (p.userData == null)
                 {
-                    CircleShape point = new CircleShape(3);
+                    Random rand = new Random();
+                    CircleShape point = new CircleShape(rand.Next(3, 20));
                     point.Origin = new Vector2f(point.Radius, point.Radius);
                     p.userData = point;
                 }
@@ -38,7 +39,7 @@ namespace Quad_and_KD_Trees
 
                 if (p.colliding == true)
                 {
-                    p.userData.FillColor = Color.White;
+                    p.userData.FillColor = Color.Magenta;
                 }
                 else 
                 {

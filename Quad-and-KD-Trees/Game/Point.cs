@@ -67,6 +67,26 @@ namespace Quad_and_KD_Trees
             }
         }
 
+        //rect size = w / 2
+        public Vector2f GetSize()
+        {
+            Vector2f size = new Vector2f(0, 0);
+            if (userData != null)
+            {
+                if(userData is CircleShape)
+                {
+                    CircleShape shape = userData as CircleShape;
+                    size = new Vector2f(shape.Radius, shape.Radius);
+                }
+                if(userData is RectangleShape)
+                {
+                    RectangleShape shape = userData as RectangleShape;
+                    size = shape.Size / 2;
+                }
+            }
+            return size;
+        }
+
         private bool overlapHighlight(Point pOther)
         {
             if (pOther == this) return false;

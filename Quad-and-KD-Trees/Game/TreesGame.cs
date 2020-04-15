@@ -32,8 +32,10 @@ namespace Quad_and_KD_Trees
         RectBoundry quadTreeBoundry;
         public KDTree kdTree;
 
-        MouseBox mouseBox;
-        TreeManager treeManager;
+        public string consoleText = "";
+
+        private MouseBox _mouseBox;
+        private TreeManager _treeManager;
 
         public TreesGame() : base(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT, WINDOW_TITLE, Color.Black)
         {
@@ -47,7 +49,7 @@ namespace Quad_and_KD_Trees
 
         public override void Initialize()
         {
-            treeManager = new TreeManager();
+            _treeManager = new TreeManager();
 
             pointGenerator = new PointGenerator(10);
             //pointGenerator.GenerateRandomPoints((Vector2i)window.Size);
@@ -55,7 +57,8 @@ namespace Quad_and_KD_Trees
 
             quadTreeBoundry = new RectBoundry(window.Size.X / 2, window.Size.Y / 2, window.Size.X, window.Size.Y);
 
-            mouseBox = new MouseBox(new Vector2f(0, 0), new Vector2f(100, 100));
+            //_mouseBox = new MouseBox(new RectBoundry(new Vector2f(0, 0), new Vector2f(100, 100)));
+            _mouseBox = new MouseBox(new CircleBoundry(new Vector2f(0, 0), 100));
         }
 
         public override void Update(GameTime pGameTime)
@@ -63,19 +66,20 @@ namespace Quad_and_KD_Trees
             liveTesting(pGameTime);
 
             //check mousebox points
-            mouseBox.Update(window);
-            mouseBox.CheckPoints(treeManager.drawPossiblePoints);
+            if (_mouseBox != null)
+            {
+                _mouseBox.Update(window);
+                _mouseBox.CheckPoints(_treeManager.drawPossiblePoints);
+            }
 
             //check collisions
-            if (treeManager.collidingPoints) particleCollision();
+            if (_treeManager.collidingPoints) particleCollision();
         }
 
         public override void Draw(GameTime pGameTime)
         {
-            DebugUtility.DrawPreformanceData(this, Color.Red);
-
             //draw trees
-            if (treeManager.drawTrees)
+            if (_treeManager.drawTrees)
             {
                 if (quadTree != null) quadTree.DrawTree(window, Color.White);
                 if (kdTree != null) kdTree.DrawSplitLines(window, (Vector2f)window.Size, Color.White, new Vector2f(0, 0));
@@ -85,7 +89,9 @@ namespace Quad_and_KD_Trees
             pointGenerator.DrawPoints(window, Color.Red);
 
             //draw mouseBox
-            mouseBox.Draw(window, Color.Green);
+            if(_mouseBox != null) _mouseBox.Draw(window, Color.Green);
+
+            DebugUtility.DrawPreformanceData(this, window, consoleText, Color.Red);
         }
 
         private void clearScreen()
@@ -93,23 +99,28 @@ namespace Quad_and_KD_Trees
             //destroy points
             pointGenerator.DestroyPoints();
 
+            clearTrees();
+
+            //clear mousepoints
+            if (_mouseBox != null) _mouseBox.possiblePoints = null;
+        }
+
+        private void clearTrees()
+        {
             //reset trees
             quadTree = null;
             kdTree = null;
-
-            //clear mousepoints
-            mouseBox.possiblePoints = null;
         }
 
         private void liveTesting(GameTime pGameTime)
         {
             //move points
-            if (treeManager.movingPoints) pointGenerator.MovePoints(pGameTime, window);
+            if (_treeManager.movingPoints) pointGenerator.MovePoints(pGameTime, window);
 
             //ModeSelect
-            if (treeManager.MouseReleased(Mouse.Button.Left) || Mouse.IsButtonPressed(Mouse.Button.Right))
+            if (_treeManager.MouseReleased(Mouse.Button.Left) || Mouse.IsButtonPressed(Mouse.Button.Right))
             {
-                switch (treeManager.pointDrawMode)
+                switch (_treeManager.pointDrawMode)
                 {
                     case TreeManager.PointDrawMode.NoDraw:
                         break;
@@ -120,38 +131,28 @@ namespace Quad_and_KD_Trees
                         pointGenerator.GenerateCloudPoints((Vector2f)Mouse.GetPosition(window), 100, 1);
                         break;
                 }
-
-                switch (treeManager.treeMode)
-                {
-                    case TreeManager.TreeMode.NoTree:
-                        mouseBox.possiblePoints = pointGenerator.GetPoints();
-                        break;
-                    case TreeManager.TreeMode.QuadTree:
-                        quadTree = new QuadTree();
-                        break;
-                    case TreeManager.TreeMode.KDTree:
-                        kdTree = new KDTree(pointGenerator.GetPoints(), 1);
-                        break;
-                }
             }
 
             //Generate Tree
-            switch (treeManager.treeMode)
+            switch (_treeManager.treeMode)
             {
-                case TreeManager.TreeMode.QuadTree:
-                    if (quadTree != null)
-                    {
-                        quadTree = quadTree = new QuadTree(quadTreeBoundry, 1);
-                        quadTree.Insert(pointGenerator.GetPoints());
-                        mouseBox.possiblePoints = quadTree.QueryRange(mouseBox);
-                    }
+                case TreeManager.TreeMode.NoTree:
+                    if (_mouseBox != null) _mouseBox.possiblePoints = pointGenerator.GetPoints();
                     break;
+
+                case TreeManager.TreeMode.QuadTree:
+                    if(quadTree == null) quadTree = new QuadTree();
+
+                    quadTree = quadTree = new QuadTree(quadTreeBoundry, 4);
+                    quadTree.Insert(pointGenerator.GetPoints());
+                    if (_mouseBox != null)  _mouseBox.possiblePoints = quadTree.QueryRange(_mouseBox.boundry);
+                    break;
+
                 case TreeManager.TreeMode.KDTree:
-                    if (kdTree != null)
-                    {
-                        kdTree.GenerateTree();
-                        mouseBox.possiblePoints = kdTree.QueryRectangelRange(mouseBox);
-                    }
+                    if(kdTree == null) kdTree = new KDTree(pointGenerator.GetPoints(), 1);
+
+                    kdTree.GenerateTree();
+                    if (_mouseBox != null) _mouseBox.possiblePoints = kdTree.QueryRectangelRange(_mouseBox.boundry);
                     break;
             }
 
@@ -159,60 +160,77 @@ namespace Quad_and_KD_Trees
             //tree modes
             if (Keyboard.IsKeyPressed(Keyboard.Key.Num0))
             {
-                treeManager.treeMode = TreeManager.TreeMode.NoTree;
-                clearScreen();
+                _treeManager.treeMode = TreeManager.TreeMode.NoTree;
+                clearTrees();
+                consoleText = "No Tree Mode";
                 Console.WriteLine("No Tree Mode");
             }
             else if (Keyboard.IsKeyPressed(Keyboard.Key.Num1))
             {
-                treeManager.treeMode = TreeManager.TreeMode.QuadTree;
-                clearScreen();
+                _treeManager.treeMode = TreeManager.TreeMode.QuadTree;
+                clearTrees();
+                consoleText = "QuadTree Mode";
                 Console.WriteLine("QuadTree Mode");
             }
             else if (Keyboard.IsKeyPressed(Keyboard.Key.Num2))
             {
-                treeManager.treeMode = TreeManager.TreeMode.KDTree;
-                clearScreen();
+                _treeManager.treeMode = TreeManager.TreeMode.KDTree;
+                clearTrees();
+                consoleText = "KDTree Mode";
                 Console.WriteLine("KDTree Mode");
             }
             //draw modes
             else if (Keyboard.IsKeyPressed(Keyboard.Key.Num3))
             {
-                treeManager.pointDrawMode = TreeManager.PointDrawMode.DrawPoint;
+                _treeManager.pointDrawMode = TreeManager.PointDrawMode.DrawPoint;
+                consoleText = "DrawPoint mode";
                 Console.WriteLine("DrawPoint mode");
             }
             else if (Keyboard.IsKeyPressed(Keyboard.Key.Num4))
             {
-                treeManager.pointDrawMode = TreeManager.PointDrawMode.DrawCloud;
+                _treeManager.pointDrawMode = TreeManager.PointDrawMode.DrawCloud;
+                consoleText = "DrawCloud mode";
                 Console.WriteLine("DrawCloud mode");
             }
-            else if (treeManager.KeyboardReleased(Keyboard.Key.P))
+            else if (_treeManager.KeyboardReleased(Keyboard.Key.P))
             {
-                treeManager.drawPossiblePoints = !treeManager.drawPossiblePoints;
-                Console.WriteLine($"Highlight Possible Points : {treeManager.drawPossiblePoints}");
+                _treeManager.drawPossiblePoints = !_treeManager.drawPossiblePoints;
+                consoleText = $"Highlight Possible Points : {_treeManager.drawPossiblePoints}";
+                Console.WriteLine($"Highlight Possible Points : {_treeManager.drawPossiblePoints}");
             }
             //draw trees
-            else if (treeManager.KeyboardReleased(Keyboard.Key.D))
+            else if (_treeManager.KeyboardReleased(Keyboard.Key.D))
             {
-                treeManager.drawTrees = !treeManager.drawTrees;
-                Console.WriteLine($"Draw Tree : {treeManager.drawTrees}");
+                _treeManager.drawTrees = !_treeManager.drawTrees;
+                consoleText = $"Draw Tree : {_treeManager.drawTrees}";
+                Console.WriteLine($"Draw Tree : {_treeManager.drawTrees}");
             }
             //move points
-            else if (treeManager.KeyboardReleased(Keyboard.Key.F))
+            else if (_treeManager.KeyboardReleased(Keyboard.Key.F))
             {
-                treeManager.movingPoints = !treeManager.movingPoints;
-                Console.WriteLine($"Move Points : {treeManager.movingPoints}");
+                _treeManager.movingPoints = !_treeManager.movingPoints;
+                consoleText = $"Move Points : {_treeManager.movingPoints}";
+                Console.WriteLine($"Move Points : {_treeManager.movingPoints}");
             }
             //point collision
-            else if (treeManager.KeyboardReleased(Keyboard.Key.C))
+            else if (_treeManager.KeyboardReleased(Keyboard.Key.C))
             {
-                treeManager.collidingPoints = !treeManager.collidingPoints;
-                Console.WriteLine($"Calculate Collisions : {treeManager.collidingPoints}");
+                _treeManager.collidingPoints = !_treeManager.collidingPoints;
+                foreach(Point p in pointGenerator.GetPoints())
+                {
+                    if (p != null)
+                    {
+                        p.colliding = false;
+                    }
+                }
+                consoleText = $"Calculate Collisions : {_treeManager.collidingPoints}";
+                Console.WriteLine($"Calculate Collisions : {_treeManager.collidingPoints}");
             }
             //clearup
             else if (Keyboard.IsKeyPressed(Keyboard.Key.Space))
             {
                 clearScreen();
+                consoleText = "Clear";
                 Console.WriteLine("Clear");
             }
             #endregion
@@ -221,7 +239,7 @@ namespace Quad_and_KD_Trees
         private void particleCollision()
         {
             List<Point> pointList = pointGenerator.GetPoints();
-            switch (treeManager.treeMode)
+            switch (_treeManager.treeMode)
             {
                 case TreeManager.TreeMode.NoTree:
                     if (pointList == null) return;
@@ -230,14 +248,18 @@ namespace Quad_and_KD_Trees
                         p.HandleCollision(pointList);
                     }
                     break;
+
                 case TreeManager.TreeMode.QuadTree:
                     foreach(Point p in pointList)
                     {
                         if (quadTree == null) return;
                         if (p.userData == null) return;
-                        p.HandleCollision(quadTree.QueryRange(p.Boundry()));
+                        Boundry point = p.Boundry();
+                        pointList = quadTree.QueryRange(point);
+                        p.HandleCollision(pointList);
                     }
                     break;
+
                 case TreeManager.TreeMode.KDTree:
 
                     break;
