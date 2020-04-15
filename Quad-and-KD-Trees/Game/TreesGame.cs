@@ -62,11 +62,20 @@ namespace Quad_and_KD_Trees
             //live testing
             /**/
             //KDTree
-            if (Mouse.IsButtonPressed(Mouse.Button.Left))
+            if (mouseBox.mouseButtonReleased || Mouse.IsButtonPressed(Mouse.Button.Right))
             {
-                pointGenerator.GenerateCloudPoints((Vector2f)Mouse.GetPosition(window), 100, 1);
+                switch (mouseBox.drawMode)
+                {
+                    case 1:
+                        pointGenerator.GeneratePoint((Vector2f)Mouse.GetPosition(window));
+                        break;
 
-                switch (mouseBox.mode)
+                    case 2:
+                        pointGenerator.GenerateCloudPoints((Vector2f)Mouse.GetPosition(window), 100, 1);
+                        break;
+                }
+
+                switch (mouseBox.treeMode)
                 {
                     case 1:
                         //QuadTree
@@ -75,7 +84,7 @@ namespace Quad_and_KD_Trees
                         break;
 
                     case 2:
-                        kdTree = new KDTree(pointGenerator.GetPoints(), 4);
+                        kdTree = new KDTree(pointGenerator.GetPoints(), 1);
                         break;
                 }
             }
@@ -83,13 +92,21 @@ namespace Quad_and_KD_Trees
 
             if(Keyboard.IsKeyPressed(Keyboard.Key.Num1))
             {
-                mouseBox.mode = 1;
+                mouseBox.treeMode = 1;
                 clearScreen();
             }
             else if(Keyboard.IsKeyPressed(Keyboard.Key.Num2))
             {
-                mouseBox.mode = 2;
+                mouseBox.treeMode = 2;
                 clearScreen();
+            }
+            else if (Keyboard.IsKeyPressed(Keyboard.Key.Num3))
+            {
+                mouseBox.drawMode = 1;
+            }
+            else if (Keyboard.IsKeyPressed(Keyboard.Key.Num4))
+            {
+                mouseBox.drawMode = 2;
             }
 
             //clearup

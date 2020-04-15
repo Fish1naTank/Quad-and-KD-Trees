@@ -8,7 +8,11 @@ namespace Quad_and_KD_Trees
     class MouseBox : Boundry
     {
         public List<Point> pointsFound;
-        public int mode = 1;
+        public bool mouseButtonReleased = false;
+        public int treeMode = 1;
+        public int drawMode = 1;
+
+        private bool _mouseDown = false;
         public MouseBox(Vector2f pPosition, Vector2f pSize) : base(pPosition, pSize)
         {
             position = pPosition;
@@ -18,6 +22,8 @@ namespace Quad_and_KD_Trees
         public void Update(RenderWindow pGameWindow)
         {
             position = (Vector2f)Mouse.GetPosition(pGameWindow);
+
+            mouseReleased();
         }
 
         public override void Draw(RenderWindow pWindow, Color pColor)
@@ -46,6 +52,22 @@ namespace Quad_and_KD_Trees
                 p.userData.FillColor = pColor;
 
                 pWindow.Draw(p.userData);
+            }
+        }
+
+        private void mouseReleased()
+        {
+            mouseButtonReleased = false;
+            if (Mouse.IsButtonPressed(Mouse.Button.Left))
+            {
+                mouseButtonReleased = false;
+                _mouseDown = true;
+            }
+
+            if (_mouseDown && !Mouse.IsButtonPressed(Mouse.Button.Left))
+            {
+                mouseButtonReleased = true;
+                _mouseDown = false;
             }
         }
     }

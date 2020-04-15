@@ -8,16 +8,13 @@ namespace Quad_and_KD_Trees
 {
     class PointGenerator
     {
-        public enum Distrabution { Random, Cloud };
-        public Distrabution distrabutionType;
         public int pointCount;
 
         private List<Point> _points = new List<Point>();
 
-        public PointGenerator(int pPointCount, Distrabution pDistrabutionType = Distrabution.Random)
+        public PointGenerator(int pPointCount)
         {
             pointCount = pPointCount;
-            distrabutionType = pDistrabutionType;
         }
 
         public List<Point> GetPoints()
@@ -57,7 +54,7 @@ namespace Quad_and_KD_Trees
             }
         }
         
-        public  void GenerateCloudPoints(Vector2f pCenter, int pRadius, int count)
+        public void GenerateCloudPoints(Vector2f pCenter, int pRadius, int count)
         {
             Random rand = new Random();
 
@@ -71,6 +68,11 @@ namespace Quad_and_KD_Trees
 
                 _points.Add(new Point(pos));
             }
+        }
+
+        public void GeneratePoint(Vector2f pPosition)
+        {
+            _points.Add(new Point(pPosition));
         }
 
         public void DestroyPoints()
