@@ -67,6 +67,8 @@ namespace Quad_and_KD_Trees
             _childTrees[0].GenerateTree(lowMedianList, axis);
             _childTrees[1].GenerateTree(highMedianList, axis);
         }
+
+        //get close points
         public List<Point> QueryRectangelRange(Boundry pRectRange, List<Point> pFound = null)
         {
             if (pointList == null) return new List<Point>();
@@ -78,7 +80,7 @@ namespace Quad_and_KD_Trees
             {
                 foreach (Point p in pointList)
                 {
-                    if (pRectRange.Contains(p.position)) found.Add(p);
+                    found.Add(p);
                 }
             }
             else

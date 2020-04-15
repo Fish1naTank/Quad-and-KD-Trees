@@ -11,40 +11,28 @@ namespace Quad_and_KD_Trees
         public List<Point> points;
         public bool subdivided = false;
 
-        public Boundry boundry { get; private set; }
+        public RectBoundry boundry { get; private set; }
 
         public int capacity { get; private set; }
 
         public QuadTree[] childTrees { get; private set; }
 
-        private List<Point> _pointsToAdd;
-
-
-        public QuadTree(Boundry pBoundry, int pCapacity, List<Point> pPointsToAdd = null)
+        public QuadTree() {}
+        public QuadTree(RectBoundry pBoundry, int pCapacity)
         {
             boundry = pBoundry;
             capacity = pCapacity;
 
             points = new List<Point>();
-            _pointsToAdd = pPointsToAdd;
         }
 
-        //insert new data set
-        public void GenerateTree(List<Point> pPoints = null)
+        
+        public void Insert(List<Point> pPointList)
         {
-            if(pPoints != null)
-            {
-                _pointsToAdd = pPoints;
-            }
-
-            if (_pointsToAdd == null) return;
-
-            foreach (Point p in _pointsToAdd)
+            foreach (Point p in pPointList)
             {
                 Insert(p);
             }
-
-            _pointsToAdd = null;
         }
 
         //ask to insert a point, return false if we dont take it
@@ -69,30 +57,26 @@ namespace Quad_and_KD_Trees
             }
         }
 
-        public List<Point> QueryCircleRange(float pCircleRange)
-        {
-            throw new NotImplementedException();
-        }
-
-        public List<Point> QueryRectangelRange(Boundry pRectRange, List<Point> pFound = null)
+        //get close points
+        public List<Point> QueryRange(Boundry pRange, List<Point> pFound = null)
         {
             List<Point> found = pFound;
             if (found == null) found = new List<Point>();
 
-            if (!pRectRange.Intersects(boundry)) return found;
+            if (!pRange.Intersects(boundry)) return found;
 
             if(!subdivided)
             {
-                foreach(Point p in points)
+                foreach (Point p in points)
                 {
-                    if (pRectRange.Contains(p.position)) found.Add(p);
+                    found.Add(p);
                 }
             }
             else
             {
                 foreach(QuadTree childTree in childTrees)
                 {
-                    childTree.QueryRectangelRange(pRectRange, found);
+                    childTree.QueryRange(pRange, found);
                 }
             }
             return found;
@@ -138,20 +122,20 @@ namespace Quad_and_KD_Trees
 
         private void Subdivide()
         {
+            subdivided = true;
+
             childTrees = new QuadTree[4];
 
             // 0 | 1
             //-------
             // 2 | 3
-            float xOffset = boundry.size.X / 2;
-            float yOffset = boundry.size.Y / 2;
-            childTrees[0] = new QuadTree(new Boundry(boundry.position.X - xOffset, boundry.position.Y - yOffset, boundry.size.X, boundry.size.Y), capacity);
-            childTrees[1] = new QuadTree(new Boundry(boundry.position.X + xOffset, boundry.position.Y - yOffset, boundry.size.X, boundry.size.Y), capacity);
-            childTrees[2] = new QuadTree(new Boundry(boundry.position.X - xOffset, boundry.position.Y + yOffset, boundry.size.X, boundry.size.Y), capacity);
-            childTrees[3] = new QuadTree(new Boundry(boundry.position.X + xOffset, boundry.position.Y + yOffset, boundry.size.X, boundry.size.Y), capacity);
+            Vector2f offset = new Vector2f(boundry.size.X / 2, boundry.size.Y / 2);
+            childTrees[0] = new QuadTree(new RectBoundry(boundry.position.X - offset.X, boundry.position.Y - offset.Y, boundry.size.X, boundry.size.Y), capacity);
+            childTrees[1] = new QuadTree(new RectBoundry(boundry.position.X + offset.X, boundry.position.Y - offset.Y, boundry.size.X, boundry.size.Y), capacity);
+            childTrees[2] = new QuadTree(new RectBoundry(boundry.position.X - offset.X, boundry.position.Y + offset.Y, boundry.size.X, boundry.size.Y), capacity);
+            childTrees[3] = new QuadTree(new RectBoundry(boundry.position.X + offset.X, boundry.position.Y + offset.Y, boundry.size.X, boundry.size.Y), capacity);
 
-            //give all our points to the 
-
+            //give all our points to the child trees
             foreach(Point p in points.ToList())
             {
                 if (childTrees[0].Insert(p) || childTrees[1].Insert(p)
@@ -160,9 +144,6 @@ namespace Quad_and_KD_Trees
                     continue;
                 }
             }
-
-
-            subdivided = true;
         }
     }
 }

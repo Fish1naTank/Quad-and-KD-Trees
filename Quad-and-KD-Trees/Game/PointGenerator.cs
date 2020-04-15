@@ -35,7 +35,15 @@ namespace Quad_and_KD_Trees
                 }
 
                 p.userData.Position = p.position;
-                p.userData.FillColor = pColor;
+
+                if (p.colliding == true)
+                {
+                    p.userData.FillColor = Color.White;
+                }
+                else 
+                {
+                    p.userData.FillColor = pColor; 
+                }
 
                 pWindow.Draw(p.userData);
             }
@@ -73,6 +81,14 @@ namespace Quad_and_KD_Trees
         public void GeneratePoint(Vector2f pPosition)
         {
             _points.Add(new Point(pPosition));
+        }
+
+        public void MovePoints(GameTime pGameTime, RenderWindow pWindow)
+        {
+            foreach(Point p in _points)
+            {
+                p.Move(pGameTime, pWindow);
+            }
         }
 
         public void DestroyPoints()

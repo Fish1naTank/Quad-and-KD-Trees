@@ -5,14 +5,11 @@ using System.Collections.Generic;
 
 namespace Quad_and_KD_Trees
 {
-    class MouseBox : Boundry
+    class MouseBox : RectBoundry
     {
-        public List<Point> pointsFound;
-        public bool mouseButtonReleased = false;
-        public int treeMode = 1;
-        public int drawMode = 1;
+        public List<Point> possiblePoints;
+        private List<Point> _pointsFound;
 
-        private bool _mouseDown = false;
         public MouseBox(Vector2f pPosition, Vector2f pSize) : base(pPosition, pSize)
         {
             position = pPosition;
@@ -22,14 +19,37 @@ namespace Quad_and_KD_Trees
         public void Update(RenderWindow pGameWindow)
         {
             position = (Vector2f)Mouse.GetPosition(pGameWindow);
-
-            mouseReleased();
         }
 
         public override void Draw(RenderWindow pWindow, Color pColor)
         {
             drawBoundry(pWindow, pColor);
             drawPoints(pWindow, pColor);
+        }
+
+        public void CheckPoints(bool pCheckPossiblePoints = true)
+        {
+            if(possiblePoints == null)
+            {
+                _pointsFound = possiblePoints;
+                return;
+            }
+            _pointsFound = new List<Point>();
+            //check intersection
+            foreach (Point p in possiblePoints)
+            {
+                if (!pCheckPossiblePoints)
+                {
+                    if (Contains(p.position))
+                    {
+                        _pointsFound.Add(p);
+                    }
+                }
+                else
+                {
+                    _pointsFound.Add(p);
+                }
+            }
         }
 
         private void drawBoundry(RenderWindow pWindow, Color pColor)
@@ -46,28 +66,14 @@ namespace Quad_and_KD_Trees
 
         private void drawPoints(RenderWindow pWindow, Color pColor)
         {
-            if (pointsFound == null) return;
-            foreach(Point p in pointsFound)
+            if (_pointsFound == null) return;
+            foreach(Point p in _pointsFound)
             {
-                p.userData.FillColor = pColor;
+                if (p == null || p.userData == null) return;
+
+                if(!p.colliding) p.userData.FillColor = pColor;
 
                 pWindow.Draw(p.userData);
-            }
-        }
-
-        private void mouseReleased()
-        {
-            mouseButtonReleased = false;
-            if (Mouse.IsButtonPressed(Mouse.Button.Left))
-            {
-                mouseButtonReleased = false;
-                _mouseDown = true;
-            }
-
-            if (_mouseDown && !Mouse.IsButtonPressed(Mouse.Button.Left))
-            {
-                mouseButtonReleased = true;
-                _mouseDown = false;
             }
         }
     }

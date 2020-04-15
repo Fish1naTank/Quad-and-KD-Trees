@@ -57,6 +57,9 @@
     <Compile Include="GameLoop\GameTime.cs" />
     <Compile Include="Game\Boundry.cs" />
     <Compile Include="Game\DebugUtility.cs" />
+    <Compile Include="Game\CircleBoundry.cs" />
+    <Compile Include="Game\RectBoundry.cs" />
+    <Compile Include="Game\TreeManager.cs" />
     <Compile Include="Game\KDTree.cs" />
     <Compile Include="Game\MouseBox.cs" />
     <Compile Include="Game\Point.cs" />
