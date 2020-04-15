@@ -69,6 +69,8 @@ namespace Quad_and_KD_Trees
         }
         public List<Point> QueryRectangelRange(Boundry pRectRange, List<Point> pFound = null)
         {
+            if (pointList == null) return new List<Point>();
+
             List<Point> found = pFound;
             if (found == null) found = new List<Point>();
 

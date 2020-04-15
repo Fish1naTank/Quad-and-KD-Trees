@@ -17,13 +17,34 @@ namespace Quad_and_KD_Trees
 
         public QuadTree[] childTrees { get; private set; }
 
+        private List<Point> _pointsToAdd;
 
-        public QuadTree(Boundry pBoundry, int pCapacity)
+
+        public QuadTree(Boundry pBoundry, int pCapacity, List<Point> pPointsToAdd = null)
         {
             boundry = pBoundry;
             capacity = pCapacity;
 
             points = new List<Point>();
+            _pointsToAdd = pPointsToAdd;
+        }
+
+        //insert new data set
+        public void GenerateTree(List<Point> pPoints = null)
+        {
+            if(pPoints != null)
+            {
+                _pointsToAdd = pPoints;
+            }
+
+            if (_pointsToAdd == null) return;
+
+            foreach (Point p in _pointsToAdd)
+            {
+                Insert(p);
+            }
+
+            _pointsToAdd = null;
         }
 
         //ask to insert a point, return false if we dont take it

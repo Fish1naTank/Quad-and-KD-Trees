@@ -3,7 +3,6 @@ using SFML.System;
 using SFML.Window;
 using SFML.Graphics;
 
-
 namespace Quad_and_KD_Trees
 {
     public abstract class GameLoop

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using SFML.Graphics;
 using SFML.System;
+using SFML.Window;
 
 namespace Quad_and_KD_Trees
 {
@@ -11,40 +12,12 @@ namespace Quad_and_KD_Trees
         public Distrabution distrabutionType;
         public int pointCount;
 
-        private List<Point> _points;
+        private List<Point> _points = new List<Point>();
 
         public PointGenerator(int pPointCount, Distrabution pDistrabutionType = Distrabution.Random)
         {
             pointCount = pPointCount;
             distrabutionType = pDistrabutionType;
-        }
-
-        public void Generate(Vector2i pSpawnRange)
-        {
-            //destroy all points
-            if (_points != null)
-            {
-                foreach(Point p in _points)
-                {
-                    if(p != null)
-                    {
-                        p.userData.Dispose();
-                    }
-                }
-            }
-
-            _points = new List<Point>(pointCount);
-
-            //add create new points
-            switch (distrabutionType)
-            {
-                case Distrabution.Random:
-                    GenerateRandomPoints(pSpawnRange);
-                    break;
-                case Distrabution.Cloud:
-                    GenerateCloudPoints();
-                    break;
-            }
         }
 
         public List<Point> GetPoints()
@@ -54,6 +27,7 @@ namespace Quad_and_KD_Trees
 
         public void DrawPoints(RenderWindow pWindow, Color pColor)
         {
+            if (_points == null) return;
             foreach(Point p in _points)
             {
                 if (p.userData == null)
@@ -70,20 +44,50 @@ namespace Quad_and_KD_Trees
             }
         }
 
-        private void GenerateRandomPoints(Vector2i pSpawnRange)
+        public void GenerateRandomPoints(Vector2i pSpawnRange)
         {
+            DestroyPoints();
+
             Random rand = new Random();
 
             for (int i = 0; i < _points.Capacity; i++)
             {
-                Vector2f pos = new Vector2f(rand.Next(0, pSpawnRange.X), rand.Next(0, pSpawnRange.Y));
+                Vector2f pos = new Vector2f((float)rand.NextDouble() * pSpawnRange.X, (float)rand.NextDouble() * pSpawnRange.Y);
                 _points.Add(new Point(pos));
             }
         }
         
-        private void GenerateCloudPoints()
+        public  void GenerateCloudPoints(Vector2f pCenter, int pRadius, int count)
         {
+            Random rand = new Random();
 
+            for (int i = 0; i < count; i++)
+            {
+                double r = pRadius * rand.NextDouble();
+                double a = (Math.PI * 2) * rand.NextDouble();
+                double x = r * Math.Cos(a);
+                double y = r * Math.Sin(a);
+                Vector2f pos = new Vector2f((float)x, (float)y) + pCenter;
+
+                _points.Add(new Point(pos));
+            }
+        }
+
+        public void DestroyPoints()
+        {
+            //destroy all points
+            if (_points != null)
+            {
+                foreach (Point p in _points)
+                {
+                    if (p != null && p.userData != null)
+                    {
+                        p.userData.Dispose();
+                    }
+                }
+            }
+
+            _points = new List<Point>(pointCount);
         }
     }
 }

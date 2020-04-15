@@ -8,6 +8,7 @@ namespace Quad_and_KD_Trees
     class MouseBox : Boundry
     {
         public List<Point> pointsFound;
+        public int mode = 1;
         public MouseBox(Vector2f pPosition, Vector2f pSize) : base(pPosition, pSize)
         {
             position = pPosition;

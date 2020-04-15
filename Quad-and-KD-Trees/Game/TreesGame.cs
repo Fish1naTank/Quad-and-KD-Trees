@@ -32,7 +32,9 @@ namespace Quad_and_KD_Trees
         public override void Initialize()
         {
             pointGenerator = new PointGenerator(10);
-            pointGenerator.Generate((Vector2i)window.Size);
+            //pointGenerator.GenerateRandomPoints((Vector2i)window.Size);
+            //pointGenerator.GenerateCloudPoints((Vector2f)window.Size / 2, 720);
+
 
             /**
             //QuadTree
@@ -46,9 +48,9 @@ namespace Quad_and_KD_Trees
             }
             /**/
 
-            /**/
+            /**
             //KDTree
-            kdTree = new KDTree(pointGenerator.GetPoints(), 1);
+            kdTree = new KDTree(pointGenerator.GetPoints(), 4);
             kdTree.GenerateTree();
             /**/
 
@@ -57,21 +59,73 @@ namespace Quad_and_KD_Trees
 
         public override void Update(GameTime pGameTime)
         {
+            //live testing
+            /**/
+            //KDTree
+            if (Mouse.IsButtonPressed(Mouse.Button.Left))
+            {
+                pointGenerator.GenerateCloudPoints((Vector2f)Mouse.GetPosition(window), 100, 1);
+
+                switch (mouseBox.mode)
+                {
+                    case 1:
+                        //QuadTree
+                        Boundry quadTreeBoundry = new Boundry(window.Size.X / 2, window.Size.Y / 2, window.Size.X, window.Size.Y);
+                        quadTree = new QuadTree(quadTreeBoundry, 1, pointGenerator.GetPoints());
+                        break;
+
+                    case 2:
+                        kdTree = new KDTree(pointGenerator.GetPoints(), 4);
+                        break;
+                }
+            }
+            /**/
+
+            if(Keyboard.IsKeyPressed(Keyboard.Key.Num1))
+            {
+                mouseBox.mode = 1;
+                clearScreen();
+            }
+            else if(Keyboard.IsKeyPressed(Keyboard.Key.Num2))
+            {
+                mouseBox.mode = 2;
+                clearScreen();
+            }
+
+            //clearup
+            if (Keyboard.IsKeyPressed(Keyboard.Key.Space))
+            {
+                clearScreen();
+            }
+
+            if (quadTree != null) quadTree.GenerateTree();
+            if (kdTree != null) kdTree.GenerateTree();
+
             mouseBox.Update(window);
 
-            //mouseBox.pointsFound = quadTree.QueryRectangelRange(mouseBox);
-            mouseBox.pointsFound = kdTree.QueryRectangelRange(mouseBox);
+            if (quadTree != null) mouseBox.pointsFound = quadTree.QueryRectangelRange(mouseBox);
+            if (kdTree != null) mouseBox.pointsFound = kdTree.QueryRectangelRange(mouseBox);
         }
 
         public override void Draw(GameTime pGameTime)
         {
             DebugUtility.DrawPreformanceData(this, Color.Red);
-            //quadTree.DrawTree(window, Color.White);
-            //quadTree.DrawPoints(window, Color.White);
-            kdTree.DrawSplitLines(window, (Vector2f)window.Size, Color.White, new Vector2f(0,0));
-            //kdTree.DrawPoints(window, Color.White);
+
+            if (quadTree != null) quadTree.DrawTree(window, Color.White);
+            if (kdTree != null)  kdTree.DrawSplitLines(window, (Vector2f)window.Size, Color.White, new Vector2f(0,0));
+
             pointGenerator.DrawPoints(window, Color.Red);
             mouseBox.Draw(window, Color.Green);
+        }
+
+        private void clearScreen()
+        {
+            pointGenerator.DestroyPoints();
+
+            quadTree = null;
+            kdTree = null;
+
+            mouseBox.pointsFound = null;
         }
     }
 }
