@@ -43,7 +43,7 @@ namespace Quad_and_KD_Trees
             else if(userData is RectangleShape)
             {
                 RectangleShape shape = (RectangleShape)userData;
-                return new RectBoundry(position, shape.Size);
+                return new RectBoundry(position, shape.Size / 2);
             }
 
             throw new NotImplementedException();
@@ -51,10 +51,12 @@ namespace Quad_and_KD_Trees
 
         public void HandleCollision(List<Point> pOtherPoints)
         {
+            if (userData == null) return;
             if (pOtherPoints == null) return;
+            Boundry myBounds = Boundry();
             foreach(Point p in pOtherPoints)
             {
-                if(overlapHighlight(p))
+                if(overlapHighlight(myBounds, p))
                 {
                     colliding = true;
                     break;
@@ -87,74 +89,37 @@ namespace Quad_and_KD_Trees
             return size;
         }
 
-        private bool overlapHighlight(Point pOther)
+        private bool overlapHighlight(Boundry pMyBounds, Point pOther)
         {
             if (pOther == this) return false;
-
-            CircleShape a = (CircleShape)userData;
-            CircleShape b = (CircleShape)pOther.userData;
-            if (a == null || b == null) return false;
-            if (dist(position, pOther.position) <= a.Radius + b.Radius)
-            {
-                return true;
-            }
-            return false;
+            return pMyBounds.Intersects(pOther.Boundry());
         }
 
         private void outOfScreen(RenderWindow pWindow)
         {
-            /**/
-            if (userData is CircleShape)
-            {
-                CircleShape shape = (CircleShape)userData;
-                if (position.X + shape.Radius > pWindow.Size.X)
-                {
-                    position.X = pWindow.Size.X - shape.Radius;
-                    _moveDirection.X *= -1;
-                }
-                else if (position.X - shape.Radius < 0)
-                {
-                    position.X = 0 + shape.Radius;
-                    _moveDirection.X *= -1;
-                }
+            Boundry boundry = Boundry();
 
-                if (position.Y + shape.Radius > pWindow.Size.Y)
-                {
-                    position.Y = pWindow.Size.Y - shape.Radius;
-                    _moveDirection.Y *= -1;
-                }
-                else if (position.Y - shape.Radius < 0)
-                {
-                    position.Y = 0 + shape.Radius;
-                    _moveDirection.Y *= -1;
-                }
-            }
-            //default case
-            else
+            if (position.X + boundry.size.X > pWindow.Size.X)
             {
-                if (position.X > pWindow.Size.X)
-                {
-                    position.X = pWindow.Size.X;
-                    _moveDirection.X *= -1;
-                }
-                else if (position.X < 0)
-                {
-                    position.X = 0;
-                    _moveDirection.X *= -1;
-                }
-
-                if (position.Y > pWindow.Size.Y)
-                {
-                    position.Y = pWindow.Size.Y;
-                    _moveDirection.Y *= -1;
-                }
-                else if (position.Y < 0)
-                {
-                    position.Y = 0;
-                    _moveDirection.Y *= -1;
-                }
+                position.X = pWindow.Size.X - boundry.size.X;
+                _moveDirection.X *= -1;
             }
-            /**/
+            else if (position.X - boundry.size.X < 0)
+            {
+                position.X = 0 + boundry.size.X;
+                _moveDirection.X *= -1;
+            }
+
+            if (position.Y + boundry.size.Y > pWindow.Size.Y)
+            {
+                position.Y = pWindow.Size.Y - boundry.size.Y;
+                _moveDirection.Y *= -1;
+            }
+            else if (position.Y - boundry.size.Y < 0)
+            {
+                position.Y = 0 + boundry.size.Y;
+                _moveDirection.Y *= -1;
+            }
         }
 
         private Vector2f randomMoveDirection()

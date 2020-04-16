@@ -16,11 +16,11 @@ using System.Linq;
 // Num4  : drawMode cloud             
 // D     : toggle tree draw           
 // I     : increase tree capacity         
-// K     : decrease tree capacity          
+// K     : decrease tree capacity        
+// V     : toggle varying point size
 // F     : toggle moving points       
 // C     : toggle point collision     
-// P     : toggle possiblePoint highlight     
-// V     : toggle varying point size     
+// P     : toggle possiblePoint highlight          
 
 namespace Quad_and_KD_Trees
 {
@@ -60,8 +60,8 @@ namespace Quad_and_KD_Trees
 
             quadTreeBoundry = new RectBoundry(window.Size.X / 2, window.Size.Y / 2, window.Size.X, window.Size.Y);
 
-            _mouseBox = new MouseBox(new RectBoundry(new Vector2f(0, 0), new Vector2f(100, 100)));
-            //_mouseBox = new MouseBox(new CircleBoundry(new Vector2f(0, 0), 100));
+            //_mouseBox = new MouseBox(new RectBoundry(new Vector2f(0, 0), new Vector2f(100, 100)));
+            _mouseBox = new MouseBox(new CircleBoundry(new Vector2f(0, 0), 100));
         }
 
         public override void Update(GameTime pGameTime)
@@ -94,7 +94,7 @@ namespace Quad_and_KD_Trees
             //draw mouseBox
             if(_mouseBox != null) _mouseBox.Draw(window, Color.Green);
 
-            DebugUtility.DrawPreformanceData(this, window, consoleText, Color.Red);
+            DebugUtility.DrawPreformanceData(this, window, consoleText, pointGenerator.GetPoints().Count, Color.Red);
         }
 
         private void clearScreen()
@@ -144,16 +144,21 @@ namespace Quad_and_KD_Trees
                     break;
 
                 case TreeManager.TreeMode.QuadTree:
-
                     quadTree = new QuadTree(quadTreeBoundry, _treeManager.treeCapacity);
                     quadTree.Insert(pointGenerator.GetPoints());
-                    if (_mouseBox != null)  _mouseBox.possiblePoints = quadTree.QueryRange(_mouseBox.boundry);
+                    if (_mouseBox != null && quadTree != null)
+                    {
+                        _mouseBox.possiblePoints = quadTree.QueryRange(_mouseBox.boundry);
+                    }
                     break;
 
                 case TreeManager.TreeMode.KDTree:
                     kdTree = new KDTree(pointGenerator.GetPoints(), _treeManager.treeCapacity);
                     kdTree.GenerateTree();
-                    if (_mouseBox != null) _mouseBox.possiblePoints = kdTree.QueryRange(_mouseBox.boundry);
+                    if (_mouseBox != null && kdTree != null)
+                    {
+                        _mouseBox.possiblePoints = kdTree.QueryRange(_mouseBox.boundry);
+                    }
                     break;
             }
 
@@ -216,6 +221,21 @@ namespace Quad_and_KD_Trees
                 consoleText = "DrawCloud mode";
                 Console.WriteLine("DrawCloud mode");
             }
+            //change mousebox shape
+            else if (_treeManager.KeyboardReleased(Keyboard.Key.S))
+            {
+                _treeManager.mouseShape = !_treeManager.mouseShape;
+                pointGenerator.shapeType = _treeManager.mouseShape;
+                if(_treeManager.mouseShape)
+                {
+                    _mouseBox = new MouseBox(new CircleBoundry(new Vector2f(0, 0), 100));
+                }
+                else
+                {
+                    _mouseBox = new MouseBox(new RectBoundry(new Vector2f(0, 0), new Vector2f(100, 100)));
+                }
+            }
+            //highlight possible points
             else if (_treeManager.KeyboardReleased(Keyboard.Key.P))
             {
                 _treeManager.drawPossiblePoints = !_treeManager.drawPossiblePoints;
@@ -250,7 +270,7 @@ namespace Quad_and_KD_Trees
                 consoleText = $"Calculate Collisions : {_treeManager.collidingPoints}";
                 Console.WriteLine($"Calculate Collisions : {_treeManager.collidingPoints}");
             }
-            //point collision
+            //point variance
             else if (_treeManager.KeyboardReleased(Keyboard.Key.V))
             {
                 _treeManager.varyingPointSize = !_treeManager.varyingPointSize;
@@ -291,7 +311,7 @@ namespace Quad_and_KD_Trees
                 case TreeManager.TreeMode.KDTree:
                     foreach (Point p in pointList)
                     {
-                        if (kdTree != null && kdTree != null)
+                        if (kdTree != null && p.userData != null)
                             p.HandleCollision(kdTree.QueryRange(p.Boundry()));
                     }
                     break;

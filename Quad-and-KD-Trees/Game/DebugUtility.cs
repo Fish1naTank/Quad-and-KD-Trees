@@ -15,7 +15,7 @@ namespace Quad_and_KD_Trees
             consoleFont = new Font(CONSOLE_FONT_PATH);
         }
 
-        public static void DrawPreformanceData(GameLoop pGameLoop, RenderWindow pWindow, String pConsoleText, Color pFontColor)
+        public static void DrawPreformanceData(GameLoop pGameLoop, RenderWindow pWindow, String pConsoleText, int pPointcount, Color pFontColor)
         {
             if (consoleFont == null) return;
 
@@ -37,14 +37,19 @@ namespace Quad_and_KD_Trees
             fpsText.Position = new Vector2f(4, 48);
             fpsText.Color = pFontColor;
 
-            Text ConsoleMessageText = new Text(pConsoleText, consoleFont, 16);
-            ConsoleMessageText.Position = new Vector2f(4, pWindow.Size.Y - 20);
-            ConsoleMessageText.Color = pFontColor;
+            Text pointCountText = new Text($"{pPointcount}", consoleFont, 14);
+            pointCountText.Position = new Vector2f(4, 68);
+            pointCountText.Color = pFontColor;
+
+            Text consoleMessageText = new Text(pConsoleText, consoleFont, 16);
+            consoleMessageText.Position = new Vector2f(4, pWindow.Size.Y - 20);
+            consoleMessageText.Color = pFontColor;
 
             pGameLoop.window.Draw(timeText);
             pGameLoop.window.Draw(deltaTimeText);
             pGameLoop.window.Draw(fpsText);
-            pGameLoop.window.Draw(ConsoleMessageText);
+            pGameLoop.window.Draw(pointCountText);
+            pGameLoop.window.Draw(consoleMessageText);
         }
     }
 }

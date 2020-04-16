@@ -9,7 +9,10 @@ namespace Quad_and_KD_Trees
     class PointGenerator
     {
         public int pointCount;
+        public bool shapeType = true;
 
+        private int _defaultShapeSize = 5;
+        private Vector2i _shapeSizeRange = new Vector2i(3, 20);
         private List<Point> _points = new List<Point>();
 
         public PointGenerator(int pPointCount)
@@ -29,19 +32,41 @@ namespace Quad_and_KD_Trees
             {
                 if (p.userData == null)
                 {
-                    CircleShape point;
-                    if (pVaryingSize)
+                    if (shapeType == true)
                     {
-                        Random rand = new Random();
-                        point = new CircleShape(rand.Next(3, 20));
-                    }
-                    else
-                    {
-                        point = new CircleShape(5);
-                    }
+                        CircleShape point;
+                        if (pVaryingSize)
+                        {
+                            Random rand = new Random();
+                            point = new CircleShape(rand.Next(_shapeSizeRange.X, _shapeSizeRange.Y));
+                        }
+                        else
+                        {
+                            point = new CircleShape(_defaultShapeSize);
+                        }
 
-                    point.Origin = new Vector2f(point.Radius, point.Radius);
-                    p.userData = point;
+                        point.Origin = new Vector2f(point.Radius, point.Radius);
+
+                        p.userData = point;
+                    }
+                    else //shapeType is false
+                    {
+                        RectangleShape point;
+                        if (pVaryingSize)
+                        {
+                            Random rand = new Random();
+                            point = new RectangleShape(new Vector2f(rand.Next(_shapeSizeRange.X, _shapeSizeRange.Y) * 2, 
+                                                                    rand.Next(_shapeSizeRange.X, _shapeSizeRange.Y) * 2));
+                        }
+                        else
+                        {
+                            point = new RectangleShape(new Vector2f(_defaultShapeSize * 2, _defaultShapeSize * 2));
+                        }
+
+                        point.Origin = point.Size / 2;
+
+                        p.userData = point;
+                    }
                 }
 
                 p.userData.Position = p.position;
