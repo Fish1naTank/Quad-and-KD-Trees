@@ -22,15 +22,24 @@ namespace Quad_and_KD_Trees
             return _points;
         }
 
-        public void DrawPoints(RenderWindow pWindow, Color pColor)
+        public void DrawPoints(RenderWindow pWindow, Color pColor, bool pVaryingSize)
         {
             if (_points == null) return;
             foreach(Point p in _points)
             {
                 if (p.userData == null)
                 {
-                    Random rand = new Random();
-                    CircleShape point = new CircleShape(rand.Next(3, 20));
+                    CircleShape point;
+                    if (pVaryingSize)
+                    {
+                        Random rand = new Random();
+                        point = new CircleShape(rand.Next(3, 20));
+                    }
+                    else
+                    {
+                        point = new CircleShape(5);
+                    }
+
                     point.Origin = new Vector2f(point.Radius, point.Radius);
                     p.userData = point;
                 }

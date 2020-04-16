@@ -15,6 +15,7 @@ namespace Quad_and_KD_Trees
         public PointDrawMode pointDrawMode = PointDrawMode.DrawPoint;
         public bool movingPoints = false;
         public bool collidingPoints = true;
+        public bool varyingPointSize = false;
 
         private List<Keyboard.Key> _keys = new List<Keyboard.Key>();
         private List<Mouse.Button> _buttons = new List<Mouse.Button>();

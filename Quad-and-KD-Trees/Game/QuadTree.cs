@@ -25,7 +25,6 @@ namespace Quad_and_KD_Trees
 
             points = new List<Point>();
         }
-
         
         public void Insert(List<Point> pPointList)
         {
@@ -172,8 +171,10 @@ namespace Quad_and_KD_Trees
 
                 if(sizeIncrease != new Vector2f(0,0))
                 {
-                    float largerSize = (float)length(sizeIncrease);
-                    sizeIncrease = new Vector2f(largerSize, largerSize) / 2;
+                    //if(rotating shapes)
+                    //float largerSize = (float)length(sizeIncrease);
+                    float largerSize = sizeIncrease.X > sizeIncrease.Y ? sizeIncrease.X : sizeIncrease.Y;
+                    sizeIncrease = new Vector2f(largerSize, largerSize);
 
                     if(pRange is CircleBoundry)
                     {

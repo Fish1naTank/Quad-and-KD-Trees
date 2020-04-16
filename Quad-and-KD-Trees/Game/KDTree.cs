@@ -69,12 +69,12 @@ namespace Quad_and_KD_Trees
         }
 
         //get close points
-        public List<Point> QueryRectangelRange(Boundry pRectRange, List<Point> pFound = null)
+        public List<Point> QueryRange(Boundry pRange, List<Point> pFound = null)
         {
-            if (pointList == null) return new List<Point>();
-
             List<Point> found = pFound;
             if (found == null) found = new List<Point>();
+
+            if (pointList == null || pRange == null) return found;
 
             if (!_split)
             {
@@ -85,16 +85,16 @@ namespace Quad_and_KD_Trees
             }
             else
             {
-                int treeToSearch = treesToSearch(pRectRange);
+                int treeToSearch = treesToSearch(pRange);
                 if (treeToSearch == 0 || treeToSearch == 1)
                 {
-                    _childTrees[treeToSearch].QueryRectangelRange(pRectRange, found);
+                    _childTrees[treeToSearch].QueryRange(pRange, found);
                 }
                 else
                 {
                     foreach (KDTree childTree in _childTrees)
                     {
-                        childTree.QueryRectangelRange(pRectRange, found);
+                        childTree.QueryRange(pRange, found);
                     }
                 }
             }
@@ -192,22 +192,25 @@ namespace Quad_and_KD_Trees
             _split = true;
         }
 
-        private int treesToSearch(Boundry pRectRange)
+        private int treesToSearch(Boundry pRange)
         {
-            Vector2f[] points = new Vector2f[2];
+            //adjust range for our data set
+            Boundry range = rangeAdjust(pRange);
+
+            Vector2f[] edgs = new Vector2f[2];
             // 0 -
             // - 1
-            points[0] = pRectRange.position - pRectRange.size;
-            points[1] = pRectRange.position + pRectRange.size;
+            edgs[0] = range.position - range.size;
+            edgs[1] = range.position + range.size;
 
             // 0 | 1
             if (_axis == 0)
             {
-                if (points[1].X < medianPoint.position.X)
+                if (edgs[1].X <= medianPoint.position.X)
                 {
                     return 0;
                 }
-                else if(medianPoint.position.X < points[0].X)
+                else if (edgs[0].X > medianPoint.position.X)
                 {
                     return 1;
                 }
@@ -219,11 +222,11 @@ namespace Quad_and_KD_Trees
             //  1
             else if (_axis == 1)
             {
-                if (points[1].Y < medianPoint.position.Y)
+                if (edgs[1].Y <= medianPoint.position.Y)
                 {
                     return 0;
                 }
-                else if (medianPoint.position.Y < points[0].Y)
+                else if (edgs[0].Y > medianPoint.position.Y)
                 {
                     return 1;
                 }
@@ -233,6 +236,50 @@ namespace Quad_and_KD_Trees
 
             //should never happen
             return -2;
+        }
+
+        private Boundry rangeAdjust(Boundry pRange)
+        {
+            if (pointList != null)
+            {
+                Vector2f sizeIncrease = getLargestPointSize(pointList);
+
+                if (sizeIncrease != new Vector2f(0, 0))
+                {
+                    //if(rotating shapes)
+                    //float largerSize = (float)length(sizeIncrease);
+                    float largerSize = sizeIncrease.X > sizeIncrease.Y ? sizeIncrease.X : sizeIncrease.Y;
+                    sizeIncrease = new Vector2f(largerSize, largerSize);
+
+                    if (pRange is CircleBoundry)
+                    {
+                        return new CircleBoundry(pRange.position, pRange.size.X + sizeIncrease.X);
+                    }
+                    else if (pRange is RectBoundry)
+                    {
+                        return new RectBoundry(pRange.position, pRange.size + sizeIncrease);
+                    }
+                }
+            }
+
+            return pRange;
+        }
+
+        private Vector2f getLargestPointSize(List<Point> points)
+        {
+            Vector2f largestSize = new Vector2f(0, 0);
+            foreach (Point point in points)
+            {
+                if (point != null)
+                {
+                    Vector2f pointSize = point.GetSize();
+                    if (pointSize.X > largestSize.X || pointSize.Y > largestSize.Y)
+                    {
+                        largestSize = pointSize;
+                    }
+                }
+            }
+            return largestSize;
         }
 
         private void quickSort(int pStart, int pEnd, int pAxis)
@@ -271,6 +318,11 @@ namespace Quad_and_KD_Trees
             Point temp = pointList[a];
             pointList[a] = pointList[b];
             pointList[b] = temp;
+        }
+
+        private double length(Vector2f v)
+        {
+            return Math.Sqrt(v.X * v.X + v.Y * v.Y);
         }
     }
 }

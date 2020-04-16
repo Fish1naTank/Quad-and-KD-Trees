@@ -86,7 +86,7 @@ namespace Quad_and_KD_Trees
             }
 
             //draw points
-            pointGenerator.DrawPoints(window, Color.Red);
+            pointGenerator.DrawPoints(window, Color.Red, _treeManager.varyingPointSize);
 
             //draw mouseBox
             if(_mouseBox != null) _mouseBox.Draw(window, Color.Green);
@@ -152,7 +152,7 @@ namespace Quad_and_KD_Trees
                     if(kdTree == null) kdTree = new KDTree(pointGenerator.GetPoints(), 1);
 
                     kdTree.GenerateTree();
-                    if (_mouseBox != null) _mouseBox.possiblePoints = kdTree.QueryRectangelRange(_mouseBox.boundry);
+                    if (_mouseBox != null) _mouseBox.possiblePoints = kdTree.QueryRange(_mouseBox.boundry);
                     break;
             }
 
@@ -226,6 +226,13 @@ namespace Quad_and_KD_Trees
                 consoleText = $"Calculate Collisions : {_treeManager.collidingPoints}";
                 Console.WriteLine($"Calculate Collisions : {_treeManager.collidingPoints}");
             }
+            //point collision
+            else if (_treeManager.KeyboardReleased(Keyboard.Key.V))
+            {
+                _treeManager.varyingPointSize = !_treeManager.varyingPointSize;
+                consoleText = $"Varying Point Size : {_treeManager.varyingPointSize}";
+                Console.WriteLine($"Varying Point Size : {_treeManager.varyingPointSize}");
+            }
             //clearup
             else if (Keyboard.IsKeyPressed(Keyboard.Key.Space))
             {
@@ -252,16 +259,17 @@ namespace Quad_and_KD_Trees
                 case TreeManager.TreeMode.QuadTree:
                     foreach(Point p in pointList)
                     {
-                        if (quadTree == null) return;
-                        if (p.userData == null) return;
-                        Boundry point = p.Boundry();
-                        pointList = quadTree.QueryRange(point);
-                        p.HandleCollision(pointList);
+                        if (quadTree != null && p.userData != null)
+                            p.HandleCollision(quadTree.QueryRange(p.Boundry()));
                     }
                     break;
 
                 case TreeManager.TreeMode.KDTree:
-
+                    foreach (Point p in pointList)
+                    {
+                        if (kdTree != null && kdTree != null)
+                            p.HandleCollision(kdTree.QueryRange(p.Boundry()));
+                    }
                     break;
             }
         }
