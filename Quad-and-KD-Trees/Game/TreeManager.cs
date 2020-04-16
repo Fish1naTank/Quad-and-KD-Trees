@@ -8,6 +8,7 @@ namespace Quad_and_KD_Trees
     {
         public enum TreeMode { NoTree, QuadTree, KDTree }
         public TreeMode treeMode = TreeMode.NoTree;
+        public uint treeCapacity = 1;
         public bool drawTrees = true;
         public bool drawPossiblePoints = true;
 

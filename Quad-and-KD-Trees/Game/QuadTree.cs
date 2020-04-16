@@ -13,12 +13,12 @@ namespace Quad_and_KD_Trees
 
         public RectBoundry boundry { get; private set; }
 
-        public int capacity { get; private set; }
+        public uint capacity { get; private set; }
 
         public QuadTree[] childTrees { get; private set; }
 
         public QuadTree() {}
-        public QuadTree(RectBoundry pBoundry, int pCapacity)
+        public QuadTree(RectBoundry pBoundry, uint pCapacity)
         {
             boundry = pBoundry;
             capacity = pCapacity;
@@ -52,11 +52,12 @@ namespace Quad_and_KD_Trees
                 if (!subdivided)
                 {
                     //check if the points we have will stop us from subdividing
-                    List<Point> allPoints = points;
+                    List<Point> allPoints = points.ToList();
                     allPoints.Add(pPoint);
                     Vector2f largestSize = getLargestPointSize(allPoints);
                     if(largestSize.X * 2 > boundry.size.X || largestSize.Y * 2 > boundry.size.Y)
                     {
+                        //points are to large for subdivide
                         points.Add(pPoint);
                         return true;
                     }

@@ -66,7 +66,7 @@ namespace Quad_and_KD_Trees
                 || (position.Y - size.Y > pBoundry.position.Y + pBoundry.size.Y));
             }
 
-            throw new NotImplementedException();
+            return false;
         }
 
         public override void Draw(RenderWindow pWindow, Color pColor)

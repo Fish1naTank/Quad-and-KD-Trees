@@ -9,6 +9,7 @@ namespace Quad_and_KD_Trees
     {
         public Boundry boundry;
         public List<Point> possiblePoints;
+
         private List<Point> _pointsFound;
 
         public MouseBox(Boundry pBoundry)
@@ -67,7 +68,7 @@ namespace Quad_and_KD_Trees
             }
             else if (boundry is RectBoundry)
             {
-                RectangleShape Rectboundry = new RectangleShape(boundry.size);
+                RectangleShape Rectboundry = new RectangleShape(boundry.size * 2);
                 Rectboundry.Origin = boundry.size;
                 Rectboundry.Position = boundry.position;
                 Rectboundry.FillColor = Color.Transparent;

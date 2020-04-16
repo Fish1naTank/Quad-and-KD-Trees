@@ -7,17 +7,20 @@ using System.Collections.Generic;
 using System.Linq;
 
 //Controls
-//    KEYBOARD:                            MOUSE:
-// Space : clear screen               // LMB : draw point
-// Num0  : no tree                    // RMB : draw points
+//    KEYBOARD:                                      MOUSE:
+// Space : clear screen                         // LMB : draw point
+// Num0  : no tree                              // RMB : draw points
 // Num1  : QuadTree Mode            
 // Num2  : KDTree Mode              
 // Num3  : drawMode point             
 // Num4  : drawMode cloud             
-// D     : toggle Tree draw           
+// D     : toggle tree draw           
+// I     : increase tree capacity         
+// K     : decrease tree capacity          
 // F     : toggle moving points       
 // C     : toggle point collision     
-// P     : toggle possiblePoint Highlight     
+// P     : toggle possiblePoint highlight     
+// V     : toggle varying point size     
 
 namespace Quad_and_KD_Trees
 {
@@ -57,8 +60,8 @@ namespace Quad_and_KD_Trees
 
             quadTreeBoundry = new RectBoundry(window.Size.X / 2, window.Size.Y / 2, window.Size.X, window.Size.Y);
 
-            //_mouseBox = new MouseBox(new RectBoundry(new Vector2f(0, 0), new Vector2f(100, 100)));
-            _mouseBox = new MouseBox(new CircleBoundry(new Vector2f(0, 0), 100));
+            _mouseBox = new MouseBox(new RectBoundry(new Vector2f(0, 0), new Vector2f(100, 100)));
+            //_mouseBox = new MouseBox(new CircleBoundry(new Vector2f(0, 0), 100));
         }
 
         public override void Update(GameTime pGameTime)
@@ -141,15 +144,17 @@ namespace Quad_and_KD_Trees
                     break;
 
                 case TreeManager.TreeMode.QuadTree:
-                    if(quadTree == null) quadTree = new QuadTree();
 
-                    quadTree = quadTree = new QuadTree(quadTreeBoundry, 4);
+                    quadTree = new QuadTree(quadTreeBoundry, _treeManager.treeCapacity);
                     quadTree.Insert(pointGenerator.GetPoints());
                     if (_mouseBox != null)  _mouseBox.possiblePoints = quadTree.QueryRange(_mouseBox.boundry);
                     break;
 
                 case TreeManager.TreeMode.KDTree:
-                    if(kdTree == null) kdTree = new KDTree(pointGenerator.GetPoints(), 1);
+                    if (kdTree == null)
+                    {
+                        kdTree = new KDTree(pointGenerator.GetPoints(), _treeManager.treeCapacity);
+                    }
 
                     kdTree.GenerateTree();
                     if (_mouseBox != null) _mouseBox.possiblePoints = kdTree.QueryRange(_mouseBox.boundry);
@@ -178,6 +183,29 @@ namespace Quad_and_KD_Trees
                 clearTrees();
                 consoleText = "KDTree Mode";
                 Console.WriteLine("KDTree Mode");
+            }
+            //tree capacity
+            else if (_treeManager.KeyboardReleased(Keyboard.Key.I))
+            {
+                _treeManager.treeCapacity += 1;
+                clearTrees();
+                consoleText = $"Tree Capacity : {_treeManager.treeCapacity}";
+                Console.WriteLine($"Tree Capacity : {_treeManager.treeCapacity}");
+            }
+            else if (_treeManager.KeyboardReleased(Keyboard.Key.K))
+            {
+                if (_treeManager.treeCapacity > 1)
+                {
+                    _treeManager.treeCapacity -= 1;
+                    clearTrees();
+                    consoleText = $"Tree Capacity : {_treeManager.treeCapacity}";
+                    Console.WriteLine($"Tree Capacity : {_treeManager.treeCapacity}");
+                }
+                else
+                {
+                    consoleText = $"Min Tree Capacity : {_treeManager.treeCapacity}";
+                    Console.WriteLine($"Min Tree Capacity : {_treeManager.treeCapacity}");
+                }
             }
             //draw modes
             else if (Keyboard.IsKeyPressed(Keyboard.Key.Num3))
