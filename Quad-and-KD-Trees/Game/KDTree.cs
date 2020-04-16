@@ -2,6 +2,7 @@
 using SFML.System;
 using SFML.Graphics;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Quad_and_KD_Trees
 {
@@ -10,8 +11,10 @@ namespace Quad_and_KD_Trees
         const int K = 2;
         uint capacity;
         Point medianPoint;
+        private int _bestMedian = -1;
 
-        private List<Point> pointList;
+        private List<Point> xSortedList;
+        private List<Point> ySortedList;
         private KDTree _root;
         private bool _split = false;
         private int _axis = 0;
@@ -20,52 +23,174 @@ namespace Quad_and_KD_Trees
         //draw
         public RectangleShape SplitLine = new RectangleShape();
 
+        //pass a point list to sort, pass null if we are a child tree
         public KDTree(List<Point> pPointList, uint pCapacity, KDTree pRoot = null)
         {
-            pointList = pPointList;
-            if (pointList != null) quickSort(0, pointList.Count - 1, 0);
+            if(pPointList != null && pPointList.Count > 1)
+            {
+                quickSort(0, pPointList.Count - 1, 0, pPointList);
+                xSortedList = pPointList.ToList();
+                quickSort(0, pPointList.Count - 1, 1, pPointList);
+                ySortedList = pPointList.ToList();
+            }
+
             capacity = pCapacity;
             if (pRoot != null) _root = pRoot;
         }
 
-        public void GenerateTree(List<Point> pPointList = null, int pAxis = 0)
+        public void GenerateTree(List<Point> pXSortedList = null, List<Point> pYSortedList = null, int pAxis = 0)
         {
             //select division axis
             _axis = pAxis % K;
 
             // check if we have a new data set
-            if (pPointList != null)
-            {
-                pointList = pPointList;
-            }
+            if (pXSortedList != null) xSortedList = pXSortedList;
+            if (pYSortedList != null) ySortedList = pYSortedList;
 
-            if (pointList == null) return;
+            if (xSortedList == null || ySortedList == null) return;
 
-            quickSort(0, pointList.Count - 1, _axis);
-
-            //check if we need to divide
-            if (pointList.Count <= capacity) return;
+            //check if we can take it
+            if (xSortedList.Count <= capacity) return;
 
             //over capacity require median split
-            if(!_split)
+            if (!_split)
             {
+                //check if it is nessessary
+                Vector2f largestSize = getLargestPointSize(xSortedList);
+                //             0 
+                //  0 | 1     ---
+                //             1 
+                if (_axis == 0)
+                {
+                    _bestMedian = (xSortedList.Count + 1) / 2;
+
+                    //check for better median
+                    Point lastPoint = xSortedList.Last();
+                    for (int i = _bestMedian; i > 0; i--)
+                    {
+                        //check segmentSize with largest possible point size
+                        float segmentSize = (lastPoint.position.X) - (xSortedList[i - 1].position.X);
+                        if (segmentSize < largestSize.X)
+                        {
+                            //check if dividing will help anyway
+                            //like if we have 30 objcts connected in a line
+                            //make a cut so we can get to a better median
+                            /**/
+                            float cluseterSize = ySortedList.Last().position.Y - (ySortedList[i - 1].position.Y);
+                            if (cluseterSize > largestSize.Y * 2)
+                            {
+                                break;
+                            }
+                            /**/
+
+                            //if we run out of points
+                            if(i == 1) return;
+                        }
+                        else
+                        {
+                            _bestMedian = i;
+                            break;
+                        }
+                    }
+                    
+                }
+                else //_axis == 1
+                {
+                    _bestMedian = (ySortedList.Count + 1) / 2;
+
+                    //check for better median
+                    Point lastPoint = ySortedList.Last();
+                    for (int i = _bestMedian; i > 0; i--)
+                    {
+                        //check segmentSize with largest possible point size
+                        float segmentSize = (lastPoint.position.Y) - (ySortedList[i - 1].position.Y);
+                        if (segmentSize < largestSize.Y)
+                        {
+                            //check if dividing will help anyway
+                            //like if we have 30 objcts connected in a line
+                            //make a cut so we can get to a better median
+                            /**/
+                            float cluseterSize = xSortedList.Last().position.X - (xSortedList[i - 1].position.X);
+                            if (cluseterSize > largestSize.X * 2)
+                            {
+                                break;
+                            }
+                            /**/
+
+                            //if we run out of points
+                            if (i == 1) return;
+                        }
+                        else
+                        {
+                            _bestMedian = i;
+                            break;
+                        }
+                    }
+                }
+
                 split();
             }
 
             //give points to children
-            int median = (pointList.Count + 1) / 2;
-            medianPoint = pointList[median - 1];
+            List<Point> ylowMedianList;
+            List<Point> yhighMedianList;
+            List<Point> xlowMedianList;
+            List<Point> xhighMedianList;
 
-            List<Point> lowMedianList = pointList.GetRange(0, median);
-            List<Point> highMedianList = pointList.GetRange(median, pointList.Count - median);
+            // low = 0, high = 1
+            //             0 
+            //  0 | 1     ---
+            //             1 
+            if (_axis == 0)
+            {
+                if(_bestMedian == -1) _bestMedian = (xSortedList.Count + 1) / 2;
+                medianPoint = xSortedList[_bestMedian - 1];
 
-            //           0 
-            // 0 | 1    ---
-            //           1 
+                xlowMedianList = xSortedList.GetRange(0, _bestMedian);
+                xhighMedianList = xSortedList.GetRange(_bestMedian, xSortedList.Count - _bestMedian);
+
+                //seperate y sorted list
+                //try to preserve order
+                ylowMedianList = ySortedList.ToList();
+                yhighMedianList = ySortedList.ToList();
+                foreach (Point p in xhighMedianList)
+                {
+                    ylowMedianList.Remove(p);
+                }
+                foreach (Point p in xlowMedianList)
+                {
+                    yhighMedianList.Remove(p);
+                }
+            }
+            else //_axis == 1
+            {
+                if (_bestMedian == -1) _bestMedian = (ySortedList.Count + 1) / 2;
+                medianPoint = ySortedList[_bestMedian - 1];
+
+                //y first
+                ylowMedianList = ySortedList.GetRange(0, _bestMedian);
+                yhighMedianList = ySortedList.GetRange(_bestMedian, ySortedList.Count - _bestMedian);
+
+                //seperate x sorted list
+                //try to preserve order
+                xlowMedianList = xSortedList.ToList();
+                xhighMedianList = xSortedList.ToList();
+                foreach (Point p in yhighMedianList)
+                {
+                    xlowMedianList.Remove(p);
+                }
+                foreach (Point p in ylowMedianList)
+                {
+                    xhighMedianList.Remove(p);
+                }
+            }
+
+            //change axis and pass sorted lists
             int axis = _axis;
             axis += 1;
-            _childTrees[0].GenerateTree(lowMedianList, axis);
-            _childTrees[1].GenerateTree(highMedianList, axis);
+
+            _childTrees[0].GenerateTree(xlowMedianList, ylowMedianList, axis);
+            _childTrees[1].GenerateTree(xhighMedianList, yhighMedianList, axis);
         }
 
         //get close points
@@ -73,6 +198,8 @@ namespace Quad_and_KD_Trees
         {
             List<Point> found = pFound;
             if (found == null) found = new List<Point>();
+
+            List<Point> pointList = _axis == 0 ? xSortedList : ySortedList;
 
             if (pointList == null || pRange == null) return found;
 
@@ -240,25 +367,22 @@ namespace Quad_and_KD_Trees
 
         private Boundry rangeAdjust(Boundry pRange)
         {
-            if (pointList != null)
+            Vector2f sizeIncrease = getLargestPointSize(_axis == 0 ? xSortedList : ySortedList);
+
+            if (sizeIncrease != new Vector2f(0, 0))
             {
-                Vector2f sizeIncrease = getLargestPointSize(pointList);
+                //if(rotating shapes)
+                //float largerSize = (float)length(sizeIncrease);
+                float largerSize = sizeIncrease.X > sizeIncrease.Y ? sizeIncrease.X : sizeIncrease.Y;
+                sizeIncrease = new Vector2f(largerSize, largerSize);
 
-                if (sizeIncrease != new Vector2f(0, 0))
+                if (pRange is CircleBoundry)
                 {
-                    //if(rotating shapes)
-                    //float largerSize = (float)length(sizeIncrease);
-                    float largerSize = sizeIncrease.X > sizeIncrease.Y ? sizeIncrease.X : sizeIncrease.Y;
-                    sizeIncrease = new Vector2f(largerSize, largerSize);
-
-                    if (pRange is CircleBoundry)
-                    {
-                        return new CircleBoundry(pRange.position, pRange.size.X + sizeIncrease.X);
-                    }
-                    else if (pRange is RectBoundry)
-                    {
-                        return new RectBoundry(pRange.position, pRange.size + sizeIncrease);
-                    }
+                    return new CircleBoundry(pRange.position, pRange.size.X + sizeIncrease.X);
+                }
+                else if (pRange is RectBoundry)
+                {
+                    return new RectBoundry(pRange.position, pRange.size + sizeIncrease);
                 }
             }
 
@@ -282,42 +406,59 @@ namespace Quad_and_KD_Trees
             return largestSize;
         }
 
-        private void quickSort(int pStart, int pEnd, int pAxis)
+        private Vector2f getSmallestPointSize(List<Point> points)
+        {
+            Vector2f smallestSize = new Vector2f(0, 0);
+            foreach (Point point in points)
+            {
+                if (point != null)
+                {
+                    Vector2f pointSize = point.GetSize();
+                    if (pointSize.X < smallestSize.X || pointSize.Y < smallestSize.Y)
+                    {
+                        smallestSize = pointSize;
+                    }
+                }
+            }
+            return smallestSize;
+        }
+
+        private void quickSort(int pStartIndex, int pEndIndex, int pAxis, List<Point> pPointList)
         {
             // no need for sort
-            if (pStart >= pEnd) return;
+            if (pStartIndex >= pEndIndex) return;
 
-            int pivot = pEnd;
-            int LastLow = pStart;
+            int pivot = pEndIndex;
+            int LastLow = pStartIndex;
 
             //iterate through list until all items are <= pivot are on the left, and are > on the right
-            for (int i = pStart; i <= pEnd; i++)
+            for (int i = pStartIndex; i <= pEndIndex; i++)
             {
                 switch (pAxis)
                 {
                     case 0:
-                        if (pointList[i].position.X <= pointList[pivot].position.X)
-                            swap(LastLow++, i);
+                        if (pPointList[i].position.X <= pPointList[pivot].position.X)
+                            swap(pPointList, LastLow++, i);
                         break;
 
                     case 1:
-                        if (pointList[i].position.Y <= pointList[pivot].position.Y)
-                            swap(LastLow++, i);
+                        if (pPointList[i].position.Y <= pPointList[pivot].position.Y)
+                            swap(pPointList, LastLow++, i);
                         break;
                 }
             }
 
             //do this with each sub array, one to the left and right of the pivot
-            quickSort(pStart, LastLow - 2, pAxis);
-            quickSort(LastLow, pEnd, pAxis);
+            quickSort(pStartIndex, LastLow - 2, pAxis, pPointList);
+            quickSort(LastLow, pEndIndex, pAxis, pPointList);
         }
 
-        private void swap(int a, int b)
+        private void swap(List<Point> pPointList, int a, int b)
         {
             if (a == b) return;
-            Point temp = pointList[a];
-            pointList[a] = pointList[b];
-            pointList[b] = temp;
+            Point temp = pPointList[a];
+            pPointList[a] = pPointList[b];
+            pPointList[b] = temp;
         }
 
         private double length(Vector2f v)

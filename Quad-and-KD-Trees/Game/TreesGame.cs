@@ -151,11 +151,7 @@ namespace Quad_and_KD_Trees
                     break;
 
                 case TreeManager.TreeMode.KDTree:
-                    if (kdTree == null)
-                    {
-                        kdTree = new KDTree(pointGenerator.GetPoints(), _treeManager.treeCapacity);
-                    }
-
+                    kdTree = new KDTree(pointGenerator.GetPoints(), _treeManager.treeCapacity);
                     kdTree.GenerateTree();
                     if (_mouseBox != null) _mouseBox.possiblePoints = kdTree.QueryRange(_mouseBox.boundry);
                     break;
