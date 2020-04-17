@@ -81,7 +81,7 @@ namespace Quad_and_KD_Trees
         public override void WriteTestStatsToFile(string pFilepath, int pTestValue)
         {
             //TreeMode, PointCount, AverageFrames
-            string data = $"KDTree, {pTestValue}, {fpsTracker.currentAvgFPS},";
+            string data = $"KDTree, {pTestValue}, {fpsTracker.currentAvgFPS}";
             using (StreamWriter sw = File.AppendText(pFilepath))
             {
                 sw.WriteLine(data);
