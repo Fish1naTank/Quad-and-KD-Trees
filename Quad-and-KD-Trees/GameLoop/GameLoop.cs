@@ -7,7 +7,7 @@ namespace Quad_and_KD_Trees
 {
     public abstract class GameLoop
     {
-        public const int TARGET_FPS = 60;
+        public const int TARGET_FPS = 144;
         public const float TIME_UNTIL_UPDATE = 1f / TARGET_FPS;
 
         public RenderWindow window { get; protected set; }

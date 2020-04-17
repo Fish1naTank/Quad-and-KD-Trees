@@ -1,0 +1,18 @@
+TreeTester Data
+NoTree collision tests
+NoTree, 100, 143.2902,
+NoTree, 200, 143.6504,
+NoTree, 300, 54.18577,
+NoTree, 400, 37.1974,
+NoTree, 500, 22.60788,
+NoTree, 600, 16.37172,
+NoTree, 700, 13.24922,
+NoTree, 800, 10.08974,
+NoTree, 900, 8.097956,
+NoTree, 1000, 6.671498,
+NoTree, 1100, 5.488906,
+NoTree, 1200, 4.762834,
+NoTree, 1300, 3.921273,
+NoTree, 1400, 3.415112,
+NoTree, 1500, 3.054117,
+NoTree, 1600, 2.603292,

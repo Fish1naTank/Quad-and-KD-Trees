@@ -65,10 +65,13 @@
     <Compile Include="Game\Point.cs" />
     <Compile Include="Game\PointGenerator.cs" />
     <Compile Include="Game\QuadTree.cs" />
-    <Compile Include="Game\TreesGameTester.cs" />
+    <Compile Include="Tests\FPSTracker.cs" />
+    <Compile Include="Tests\TreesTester.cs" />
     <Compile Include="Game\TreesGame.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="GameLoop\GameLoop.cs" />
+    <Compile Include="Tests\NoTreeTest .cs" />
+    <Compile Include="Tests\TreeTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="csfml-audio-2.dll">

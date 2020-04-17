@@ -28,7 +28,16 @@ namespace Quad_and_KD_Trees
         public void DrawPoints(RenderWindow pWindow, Color pColor, bool pVaryingSize)
         {
             if (_points == null) return;
+            UpdateUserData(pColor, pVaryingSize);
             foreach(Point p in _points)
+            {
+                pWindow.Draw(p.userData);
+            }
+        }
+
+        public void UpdateUserData(Color pColor, bool pVaryingSize)
+        {
+            foreach (Point p in _points)
             {
                 if (p.userData == null)
                 {
@@ -55,7 +64,7 @@ namespace Quad_and_KD_Trees
                         if (pVaryingSize)
                         {
                             Random rand = new Random();
-                            point = new RectangleShape(new Vector2f(rand.Next(_shapeSizeRange.X, _shapeSizeRange.Y) * 2, 
+                            point = new RectangleShape(new Vector2f(rand.Next(_shapeSizeRange.X, _shapeSizeRange.Y) * 2,
                                                                     rand.Next(_shapeSizeRange.X, _shapeSizeRange.Y) * 2));
                         }
                         else
@@ -75,12 +84,10 @@ namespace Quad_and_KD_Trees
                 {
                     p.userData.FillColor = Color.Magenta;
                 }
-                else 
+                else
                 {
-                    p.userData.FillColor = pColor; 
+                    p.userData.FillColor = pColor;
                 }
-
-                pWindow.Draw(p.userData);
             }
         }
 

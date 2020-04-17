@@ -10,8 +10,15 @@ namespace Quad_and_KD_Trees
     {
         public static void Main(string[] args)
         {
+            /**/
             TreesGame treesGame = new TreesGame();
             treesGame.Run();
+            /**/
+
+            /**
+            TreesTester treeTester = new TreesTester();
+            treeTester.Run();
+            /**/
         }
     }
 }

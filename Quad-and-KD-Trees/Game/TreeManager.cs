@@ -9,13 +9,13 @@ namespace Quad_and_KD_Trees
         public enum TreeMode { NoTree, QuadTree, KDTree }
         public TreeMode treeMode = TreeMode.NoTree;
         public uint treeCapacity = 1;
-        public bool drawTrees = true;
-        public bool drawPossiblePoints = true;
+        public bool drawTrees = false;
+        public bool drawPossiblePoints = false;
 
         public enum PointDrawMode { NoDraw, DrawPoint, DrawCloud }
         public PointDrawMode pointDrawMode = PointDrawMode.DrawPoint;
-        public bool mouseShape = true;
-        public bool collidingPoints = true;
+        public bool shapeType = true;
+        public bool collidingPoints = false;
         public bool movingPoints = false;
         public bool varyingPointSize = false;
 

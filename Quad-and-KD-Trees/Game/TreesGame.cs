@@ -18,6 +18,7 @@ using System.Linq;
 // I     : increase tree capacity         
 // K     : decrease tree capacity        
 // V     : toggle varying point size
+// S     : toggle shape type
 // F     : toggle moving points       
 // C     : toggle point collision     
 // P     : toggle possiblePoint highlight          
@@ -53,6 +54,10 @@ namespace Quad_and_KD_Trees
         public override void Initialize()
         {
             _treeManager = new TreeManager();
+            _treeManager.drawTrees = true;
+            _treeManager.drawPossiblePoints = true;
+            _treeManager.shapeType = true;
+            _treeManager.collidingPoints = true;
 
             pointGenerator = new PointGenerator(10);
             //pointGenerator.GenerateRandomPoints((Vector2i)window.Size);
@@ -224,9 +229,9 @@ namespace Quad_and_KD_Trees
             //change mousebox shape
             else if (_treeManager.KeyboardReleased(Keyboard.Key.S))
             {
-                _treeManager.mouseShape = !_treeManager.mouseShape;
-                pointGenerator.shapeType = _treeManager.mouseShape;
-                if(_treeManager.mouseShape)
+                _treeManager.shapeType = !_treeManager.shapeType;
+                pointGenerator.shapeType = _treeManager.shapeType;
+                if(_treeManager.shapeType)
                 {
                     _mouseBox = new MouseBox(new CircleBoundry(new Vector2f(0, 0), 100));
                 }
