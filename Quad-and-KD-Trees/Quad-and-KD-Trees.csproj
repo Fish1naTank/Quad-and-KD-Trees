@@ -68,6 +68,7 @@
     <Compile Include="Tests\FPSTracker.cs" />
     <Compile Include="Tests\KDTreeTest.cs" />
     <Compile Include="Tests\QuadTreeTest .cs" />
+    <Compile Include="Tests\TestTreeManager.cs" />
     <Compile Include="Tests\TreesTester.cs" />
     <Compile Include="Game\TreesGame.cs" />
     <Compile Include="Program.cs" />

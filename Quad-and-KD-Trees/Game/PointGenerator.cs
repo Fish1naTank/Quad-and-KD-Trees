@@ -147,6 +147,7 @@ namespace Quad_and_KD_Trees
                 }
             }
 
+            if (pointCount < 0) pointCount = 0;
             _points = new List<Point>(pointCount);
         }
     }

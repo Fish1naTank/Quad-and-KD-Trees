@@ -6,6 +6,7 @@ namespace Quad_and_KD_Trees
 {
     class TreeManager
     {
+        public static uint NumOfTrees = 3;
         public enum TreeMode { NoTree, QuadTree, KDTree }
         public TreeMode treeMode = TreeMode.NoTree;
         public uint treeCapacity = 1;
