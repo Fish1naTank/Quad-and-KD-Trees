@@ -15,8 +15,6 @@ namespace Quad_and_KD_Trees
         public Point(Vector2f pPosition)
         {
             position = pPosition;
-
-            _moveDirection = randomMoveDirection();
         }
 
         public Point(Vector2f pPosition, Shape pUserData)
@@ -89,6 +87,16 @@ namespace Quad_and_KD_Trees
             return size;
         }
 
+        public void SetRandomMoveDirection(Random pRand)
+        {
+            double s = 100 * pRand.NextDouble();
+            double a = (Math.PI * 2) * pRand.NextDouble();
+            double x = s * Math.Cos(a);
+            double y = s * Math.Sin(a);
+
+            _moveDirection = new Vector2f((float)x, (float)y);
+        }
+
         private bool overlapHighlight(Boundry pMyBounds, Point pOther)
         {
             if (pOther == this) return false;
@@ -120,18 +128,6 @@ namespace Quad_and_KD_Trees
                 position.Y = 0 + boundry.size.Y;
                 _moveDirection.Y *= -1;
             }
-        }
-
-        private Vector2f randomMoveDirection()
-        {
-            Random rand = new Random();
-
-            double s = 100 * rand.NextDouble();
-            double a = (Math.PI * 2) * rand.NextDouble();
-            double x = s * Math.Cos(a);
-            double y = s * Math.Sin(a);
-
-            return new Vector2f((float)x, (float)y);
         }
 
         private double dist(Vector2f a, Vector2f b)

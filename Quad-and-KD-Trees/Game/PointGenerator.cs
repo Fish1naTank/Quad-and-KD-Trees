@@ -15,6 +15,8 @@ namespace Quad_and_KD_Trees
         private Vector2i _shapeSizeRange = new Vector2i(3, 20);
         private List<Point> _points = new List<Point>();
 
+        private Random _rand = new Random();
+
         public PointGenerator(int pPointCount)
         {
             pointCount = pPointCount;
@@ -25,7 +27,7 @@ namespace Quad_and_KD_Trees
             return _points;
         }
 
-        public void DrawPoints(RenderWindow pWindow, Color pColor, bool pVaryingSize)
+        public void DrawPoints(RenderWindow pWindow, Color pColor, bool pVaryingSize = false)
         {
             if (_points == null) return;
             UpdateUserData(pColor, pVaryingSize);
@@ -35,19 +37,20 @@ namespace Quad_and_KD_Trees
             }
         }
 
-        public void UpdateUserData(Color pColor, bool pVaryingSize)
+        public void UpdateUserData(Color pColor, bool pVaryingSize = false)
         {
             foreach (Point p in _points)
             {
                 if (p.userData == null)
                 {
+                    p.SetRandomMoveDirection(_rand);
+
                     if (shapeType == true)
                     {
                         CircleShape point;
                         if (pVaryingSize)
                         {
-                            Random rand = new Random();
-                            point = new CircleShape(rand.Next(_shapeSizeRange.X, _shapeSizeRange.Y));
+                            point = new CircleShape(_rand.Next(_shapeSizeRange.X, _shapeSizeRange.Y));
                         }
                         else
                         {
@@ -63,9 +66,8 @@ namespace Quad_and_KD_Trees
                         RectangleShape point;
                         if (pVaryingSize)
                         {
-                            Random rand = new Random();
-                            point = new RectangleShape(new Vector2f(rand.Next(_shapeSizeRange.X, _shapeSizeRange.Y) * 2,
-                                                                    rand.Next(_shapeSizeRange.X, _shapeSizeRange.Y) * 2));
+                            point = new RectangleShape(new Vector2f(_rand.Next(_shapeSizeRange.X, _shapeSizeRange.Y) * 2,
+                                                                    _rand.Next(_shapeSizeRange.X, _shapeSizeRange.Y) * 2));
                         }
                         else
                         {
@@ -95,11 +97,9 @@ namespace Quad_and_KD_Trees
         {
             DestroyPoints();
 
-            Random rand = new Random();
-
             for (int i = 0; i < _points.Capacity; i++)
             {
-                Vector2f pos = new Vector2f((float)rand.NextDouble() * pSpawnRange.X, (float)rand.NextDouble() * pSpawnRange.Y);
+                Vector2f pos = new Vector2f((float)_rand.NextDouble() * pSpawnRange.X, (float)_rand.NextDouble() * pSpawnRange.Y);
                 _points.Add(new Point(pos));
             }
         }

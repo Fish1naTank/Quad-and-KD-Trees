@@ -23,6 +23,7 @@ namespace Quad_and_KD_Trees
             string deltaTimeStr = pGameLoop.gameTime.DeltaTime.ToString("0.00000");
 
             float fps = 1 / pGameLoop.gameTime.DeltaTime;
+
             string fpsStr = fps.ToString("0.00");
 
             Text timeText = new Text(totalTimeElapsedStr, consoleFont, 14);

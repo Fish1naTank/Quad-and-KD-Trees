@@ -13,10 +13,13 @@ namespace Quad_and_KD_Trees
 
         protected float _testDuration;
         protected double _testStartTime;
+        protected TreeManager _treeManager;
         protected PointGenerator _pointGenerator;
 
-        public abstract void InitializeTest(int pTestNumber, float pTestTime, PointGenerator pPointGenerator);
-        public abstract void Update(GameTime pGameTime);
-        public abstract void WriteTestStatsToFile(string pFilename);
+        public abstract void InitializeTest(int pTestNumber, float pTestTime, TreeManager pTreeManager, PointGenerator pPointGenerator);
+        public abstract void Update(GameTime pGameTime, RenderWindow pWindow);
+        public abstract void WriteTestStatsToFile(string pFilename, int pTestValue);
+        public abstract void Draw(RenderWindow pWindow);
+        protected abstract void resetTestTree();
     }
 }

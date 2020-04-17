@@ -99,25 +99,8 @@ namespace Quad_and_KD_Trees
             //draw mouseBox
             if(_mouseBox != null) _mouseBox.Draw(window, Color.Green);
 
+
             DebugUtility.DrawPreformanceData(this, window, consoleText, pointGenerator.GetPoints().Count, Color.Red);
-        }
-
-        private void clearScreen()
-        {
-            //destroy points
-            pointGenerator.DestroyPoints();
-
-            clearTrees();
-
-            //clear mousepoints
-            if (_mouseBox != null) _mouseBox.possiblePoints = null;
-        }
-
-        private void clearTrees()
-        {
-            //reset trees
-            quadTree = null;
-            kdTree = null;
         }
 
         private void liveTesting(GameTime pGameTime)
@@ -321,6 +304,24 @@ namespace Quad_and_KD_Trees
                     }
                     break;
             }
+        }
+
+        private void clearScreen()
+        {
+            //destroy points
+            pointGenerator.DestroyPoints();
+
+            clearTrees();
+
+            //clear mousepoints
+            if (_mouseBox != null) _mouseBox.possiblePoints = null;
+        }
+
+        private void clearTrees()
+        {
+            //reset trees
+            quadTree = null;
+            kdTree = null;
         }
     }
 }

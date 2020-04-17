@@ -22,16 +22,18 @@ namespace Quad_and_KD_Trees
 
         private TreeManager _treeManager;
         private PointGenerator _pointGenerator;
+        private Vector2i _pointSpawnArea;
 
         private FPSTracker fpsTracker = new FPSTracker();
 
-        private int _testTime = 5;
+        private int _testTime = 1;
 
         private int[] _pointAmmountToTest = new int[] { 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600 };
         private int _pointTestNumber = -1;
 
         //Tree tests
         private NoTreeTest _noTreeTest;
+        private QuadTreeTest _quadTreeTest;
 
         public TreesTester() : base(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT, WINDOW_TITLE, Color.Black)
         {
@@ -46,12 +48,15 @@ namespace Quad_and_KD_Trees
         public override void Initialize()
         {
             _treeManager = new TreeManager();
-            _pointGenerator = new PointGenerator(0);
+            _pointSpawnArea = (Vector2i)window.Size;
 
+            //set test settings
             _treeManager.treeMode = TreeManager.TreeMode.NoTree;
             _treeManager.collidingPoints = true;
+            _treeManager.movingPoints = true;
 
             _noTreeTest = new NoTreeTest();
+            _quadTreeTest = new QuadTreeTest((Vector2f)window.Size);
 
             //overite / create data file
             string fileTilte = "TreeTester Data\n";
@@ -60,24 +65,9 @@ namespace Quad_and_KD_Trees
 
         public override void Update(GameTime pGameTime)
         {
-            double totalTimeElapsedStr = pGameTime.TotalTimeElapesd;
-            double deltaTimeStr = pGameTime.DeltaTime;
-            float fps = 1 / pGameTime.DeltaTime;
-
             switch (_treeManager.treeMode)
             {
                 case TreeManager.TreeMode.NoTree:
-                    //initialize test number
-                    if(_pointTestNumber == -1)
-                    {
-                        _pointTestNumber = 0;
-                        //title dataset
-                        using (StreamWriter sw = File.AppendText(_treeTestDataFilepath))
-                        {
-                            sw.WriteLine("NoTree collision tests");
-                        }
-                    }
-                    //run tests
                     NoTreeUpdate(pGameTime, _treeTestDataFilepath);
                     break;
 
@@ -93,6 +83,17 @@ namespace Quad_and_KD_Trees
 
         private void NoTreeUpdate(GameTime pGameTime, string pTreeTestDataFile)
         {
+            //initialize test number
+            if (_pointTestNumber == -1)
+            {
+                _pointTestNumber = 0;
+                //title dataset
+                using (StreamWriter sw = File.AppendText(_treeTestDataFilepath))
+                {
+                    sw.WriteLine("NoTree collision tests");
+                }
+            }
+
             //update test number
             if (_noTreeTest.TestID != _pointTestNumber)
             {
@@ -101,17 +102,17 @@ namespace Quad_and_KD_Trees
                 _pointGenerator.UpdateUserData(Color.Red, _treeManager.varyingPointSize);
 
                 //start new test
-                _noTreeTest.InitializeTest(_pointTestNumber, _testTime, _pointGenerator);
+                _noTreeTest.InitializeTest(_pointTestNumber, _testTime, _treeManager ,_pointGenerator);
             }
 
             //update current test
-            _noTreeTest.Update(pGameTime);
+            _noTreeTest.Update(pGameTime, window);
 
             //check test status
             if(_noTreeTest.TestCompleate)
             {
                 //write results to file
-                _noTreeTest.WriteTestStatsToFile(pTreeTestDataFile);
+                _noTreeTest.WriteTestStatsToFile(pTreeTestDataFile, _pointAmmountToTest[_pointTestNumber]);
 
                 //check if we have more tests
                 if (_pointTestNumber<_pointAmmountToTest.Length - 1)
@@ -121,27 +122,85 @@ namespace Quad_and_KD_Trees
                 else
                 {
                     //change mode
-                    _pointTestNumber = 0;
+                    _pointTestNumber = -1;
                     _treeManager.treeMode += 1;
-
-                    //TEMP
-                    window.Close();
                 }
             }
         }
 
         private void QuadTreeUpdate(GameTime pGameTime)
         {
-            throw new NotImplementedException();
+            //initialize test number
+            if (_pointTestNumber == -1)
+            {
+                _pointTestNumber = 0;
+                //title dataset
+                using (StreamWriter sw = File.AppendText(_treeTestDataFilepath))
+                {
+                    sw.WriteLine("QuadTree collision tests");
+                }
+            }
+
+            //update test number
+            if (_quadTreeTest.TestID != _pointTestNumber)
+            {
+                updatePoints(_pointAmmountToTest[_pointTestNumber], _pointSpawnArea);
+
+                //start new test
+                _quadTreeTest.InitializeTest(_pointTestNumber, _testTime, _treeManager, _pointGenerator);
+            }
+
+            //update current test
+            _quadTreeTest.Update(pGameTime, window);
+
+            //check test status
+            if (_quadTreeTest.TestCompleate)
+            {
+                //write results to file
+                _quadTreeTest.WriteTestStatsToFile(_treeTestDataFilepath, _pointAmmountToTest[_pointTestNumber]);
+
+                //check if we have more tests
+                if (_pointTestNumber < _pointAmmountToTest.Length - 1)
+                {
+                    _pointTestNumber += 1;
+                }
+                else
+                {
+                    //change mode
+                    _pointTestNumber = -1;
+                    _treeManager.treeMode += 1;
+                }
+            }
         }
 
         private void KDTreeUpdate(GameTime pGameTime)
         {
-            throw new NotImplementedException();
+            //initialize test number
+            if (_pointTestNumber == -1)
+            {
+                _pointTestNumber = 0;
+                //title dataset
+                using (StreamWriter sw = File.AppendText(_treeTestDataFilepath))
+                {
+                    sw.WriteLine("KDTree collision tests");
+                }
+            }
+
+            //END OF TESTS
+            window.Close();
         }
 
         public override void Draw(GameTime pGameTime)
         {
+            _noTreeTest.Draw(window);
+            _quadTreeTest.Draw(window);
+        }
+
+        private void updatePoints(int pPointCount, Vector2i pSpawnArea)
+        {
+            _pointGenerator = new PointGenerator(pPointCount);
+            _pointGenerator.GenerateRandomPoints(pSpawnArea);
+            _pointGenerator.UpdateUserData(Color.Red, _treeManager.varyingPointSize);
         }
     }
 }

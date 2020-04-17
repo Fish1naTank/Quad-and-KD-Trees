@@ -6,13 +6,17 @@ using System.IO;
 
 namespace Quad_and_KD_Trees
 {
-    class NoTreeTest : TreeTest
+    class QuadTreeTest : TreeTest
     {
-        public NoTreeTest()
+        private QuadTree _quadTree;
+        private RectBoundry _quadTreeBoundry;
+        public QuadTreeTest(Vector2f pWindowSize)
         {
             TestCompleate = true;
             TestID = -1;
             _testStartTime = -1;
+
+            _quadTreeBoundry = new RectBoundry(pWindowSize.X / 2, pWindowSize.Y / 2, pWindowSize.X, pWindowSize.Y);
         }
 
         public override void InitializeTest(int pTestID, float pTestDurration, TreeManager pTreeManager, PointGenerator pPointGenerator)
@@ -36,25 +40,38 @@ namespace Quad_and_KD_Trees
 
             //run test
             #region //////////TESTS///////////
-            //movePoints
+            //moving points
             if (_treeManager.movingPoints)
             {
                 _pointGenerator.MovePoints(pGameTime, pWindow);
+
+                //rebuild tree
+                _quadTree = new QuadTree(_quadTreeBoundry, _treeManager.treeCapacity);
+                _quadTree.Insert(_pointGenerator.GetPoints());
+            }
+            else
+            {
+                //build the tree once
+                if(_quadTree == null)
+                {
+                    _quadTree = new QuadTree(_quadTreeBoundry, _treeManager.treeCapacity);
+                    _quadTree.Insert(_pointGenerator.GetPoints());
+                }
             }
 
-            //collision
+            //collisions
             if (_treeManager.collidingPoints)
             {
-                List<Point> pointList = _pointGenerator.GetPoints();
-                foreach (Point p in pointList)
+                foreach (Point p in _pointGenerator.GetPoints())
                 {
-                    p.HandleCollision(pointList);
+                    if (_quadTree != null && p.userData != null)
+                        p.HandleCollision(_quadTree.QueryRange(p.Boundry()));
                 }
             }
             #endregion
 
             //trackFPS
-            fpsTracker.UpdateCumulativeMovingAverageFPS(1 /pGameTime.DeltaTime);
+            fpsTracker.UpdateCumulativeMovingAverageFPS(1 / pGameTime.DeltaTime);
 
             //check if test is over
             if (pGameTime.TotalTimeElapesd - _testStartTime > _testDuration)
@@ -67,7 +84,7 @@ namespace Quad_and_KD_Trees
         public override void WriteTestStatsToFile(string pFilepath, int pTestValue)
         {
             //TreeMode, PointCount, AverageFrames
-            string data = $"NoTree, {pTestValue}, {fpsTracker.currentAvgFPS},";
+            string data = $"QuadTree, {pTestValue}, {fpsTracker.currentAvgFPS},";
             using (StreamWriter sw = File.AppendText(pFilepath))
             {
                 sw.WriteLine(data);
@@ -76,12 +93,15 @@ namespace Quad_and_KD_Trees
 
         public override void Draw(RenderWindow pWindow)
         {
-            if (_pointGenerator == null) return;
-            _pointGenerator.DrawPoints(pWindow, Color.Red);
+            if (_pointGenerator == null || _quadTree == null) return;
+            _pointGenerator.DrawPoints(pWindow, Color.Red, _treeManager.varyingPointSize);
+            _quadTree.DrawTree(pWindow, Color.White);
         }
 
         protected override void resetTestTree()
         {
+            _quadTree = null;
+
             TestCompleate = true;
             TestID = -1;
             _testStartTime = -1;
