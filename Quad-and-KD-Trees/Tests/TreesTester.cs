@@ -28,12 +28,17 @@ namespace Quad_and_KD_Trees
 
         private int _testTime = 1;
 
+        //Test Values
         private int[] _pointAmmountToTest = new int[] { 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600 };
         private int _pointTestNumber = -1;
+
+        private int[] _treeCapacitySizes = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20};
+        private int _treeCapacityTestNumber = -1;
 
         //Tree tests
         private NoTreeTest _noTreeTest;
         private QuadTreeTest _quadTreeTest;
+        private KDTreeTest _kdTreeTest;
 
         public TreesTester() : base(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT, WINDOW_TITLE, Color.Black)
         {
@@ -54,9 +59,11 @@ namespace Quad_and_KD_Trees
             _treeManager.treeMode = TreeManager.TreeMode.NoTree;
             _treeManager.collidingPoints = true;
             _treeManager.movingPoints = true;
+            consoleText = "Collision Test";
 
             _noTreeTest = new NoTreeTest();
             _quadTreeTest = new QuadTreeTest((Vector2f)window.Size);
+            _kdTreeTest = new KDTreeTest();
 
             //overite / create data file
             string fileTilte = "TreeTester Data\n";
@@ -186,14 +193,48 @@ namespace Quad_and_KD_Trees
                 }
             }
 
-            //END OF TESTS
-            window.Close();
+            //update test number
+            if (_kdTreeTest.TestID != _pointTestNumber)
+            {
+                updatePoints(_pointAmmountToTest[_pointTestNumber], _pointSpawnArea);
+
+                //start new test
+                _kdTreeTest.InitializeTest(_pointTestNumber, _testTime, _treeManager, _pointGenerator);
+            }
+
+            //update current test
+            _kdTreeTest.Update(pGameTime, window);
+
+            //check test status
+            if (_kdTreeTest.TestCompleate)
+            {
+                //write results to file
+                _kdTreeTest.WriteTestStatsToFile(_treeTestDataFilepath, _pointAmmountToTest[_pointTestNumber]);
+
+                //check if we have more tests
+                if (_pointTestNumber < _pointAmmountToTest.Length - 1)
+                {
+                    _pointTestNumber += 1;
+                }
+                else
+                {
+                    //change mode
+                    _pointTestNumber = -1;
+                    _treeManager.treeMode += 1;
+
+                    //END OF TESTS
+                    window.Close();
+                }
+            }
         }
 
         public override void Draw(GameTime pGameTime)
         {
             _noTreeTest.Draw(window);
             _quadTreeTest.Draw(window);
+            _kdTreeTest.Draw(window);
+
+            DebugUtility.DrawPreformanceData(this, window, consoleText, _pointGenerator.pointCount, Color.Red);
         }
 
         private void updatePoints(int pPointCount, Vector2i pSpawnArea)
