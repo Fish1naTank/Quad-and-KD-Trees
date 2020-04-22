@@ -14,7 +14,7 @@ namespace Quad_and_KD_Trees
         {
             TestCompleate = true;
             TestID = -1;
-            _testStartTime = -1;
+            _testTime = -1;
 
             _quadTreeBoundry = new RectBoundry(pWindowSize.X / 2, pWindowSize.Y / 2, pWindowSize.X, pWindowSize.Y);
         }
@@ -35,15 +35,12 @@ namespace Quad_and_KD_Trees
             //stop if the test is over
             if (TestCompleate) return;
 
-            //start timer
-            if (_testStartTime < 0) _testStartTime = pGameTime.TotalTimeElapesd;
-
             //run test
             #region //////////TESTS///////////
             //moving points
             if (_treeManager.movingPoints)
             {
-                _pointGenerator.MovePoints(pGameTime, pWindow);
+                _pointGenerator.MovePoints(pGameTime, pWindow, _treeManager.enableWindowBoundry);
 
                 //rebuild tree
                 _quadTree = new QuadTree(_quadTreeBoundry, _treeManager.treeCapacity);
@@ -73,8 +70,10 @@ namespace Quad_and_KD_Trees
             //trackFPS
             fpsTracker.UpdateCumulativeMovingAverageFPS(1 / pGameTime.DeltaTime);
 
+            //count updates
+            _testTime += 1;
             //check if test is over
-            if (pGameTime.TotalTimeElapesd - _testStartTime > _testDuration)
+            if (_testTime > _testDuration)
             {
                 //mark test as compleate
                 resetTestTree();
@@ -104,7 +103,7 @@ namespace Quad_and_KD_Trees
 
             TestCompleate = true;
             TestID = -1;
-            _testStartTime = -1;
+            _testTime = -1;
             _testDuration = -1;
             _treeManager = null;
             _pointGenerator = null;

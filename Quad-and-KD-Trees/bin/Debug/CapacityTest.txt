@@ -1,3 +1,15 @@
-QuadTree CapacityTest
-QuadTree CapacityTest
+TreeTester Data
 NoTree CapacityTest
+NoTree, 20, 7.316781
+QuadTree CapacityTest
+QuadTree, 1, 14.86434
+QuadTree, 2, 17.17251
+QuadTree, 3, 19.03137
+QuadTree, 4, 19.72889
+QuadTree, 5, 20.3672
+QuadTree, 6, 20.92805
+QuadTree, 7, 20.81286
+QuadTree, 8, 20.74754
+QuadTree, 9, 20.43925
+QuadTree, 10, 20.45134
+QuadTree, 11, 20.09962

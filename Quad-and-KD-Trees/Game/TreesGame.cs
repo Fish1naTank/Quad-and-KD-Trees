@@ -19,7 +19,8 @@ using System.Linq;
 // K     : decrease tree capacity        
 // V     : toggle varying point size
 // S     : toggle shape type
-// F     : toggle moving points       
+// F     : toggle moving points  
+// B     : toggle window boundry
 // C     : toggle point collision     
 // P     : toggle possiblePoint highlight          
 
@@ -57,6 +58,7 @@ namespace Quad_and_KD_Trees
             _treeManager.drawTrees = true;
             _treeManager.drawPossiblePoints = true;
             _treeManager.shapeType = true;
+            _treeManager.enableWindowBoundry = true;
             _treeManager.collidingPoints = true;
 
             pointGenerator = new PointGenerator(10);
@@ -106,7 +108,7 @@ namespace Quad_and_KD_Trees
         private void liveTesting(GameTime pGameTime)
         {
             //move points
-            if (_treeManager.movingPoints) pointGenerator.MovePoints(pGameTime, window);
+            if (_treeManager.movingPoints) pointGenerator.MovePoints(pGameTime, window, _treeManager.enableWindowBoundry);
 
             //ModeSelect
             if (_treeManager.MouseReleased(Mouse.Button.Left) || Mouse.IsButtonPressed(Mouse.Button.Right))
@@ -243,6 +245,13 @@ namespace Quad_and_KD_Trees
                 _treeManager.movingPoints = !_treeManager.movingPoints;
                 consoleText = $"Move Points : {_treeManager.movingPoints}";
                 Console.WriteLine($"Move Points : {_treeManager.movingPoints}");
+            }
+            //window bounds
+            else if (_treeManager.KeyboardReleased(Keyboard.Key.B))
+            {
+                _treeManager.enableWindowBoundry = !_treeManager.enableWindowBoundry;
+                consoleText = $"Window Boundry : {_treeManager.enableWindowBoundry}";
+                Console.WriteLine($"Window Boundry : {_treeManager.enableWindowBoundry}");
             }
             //point collision
             else if (_treeManager.KeyboardReleased(Keyboard.Key.C))

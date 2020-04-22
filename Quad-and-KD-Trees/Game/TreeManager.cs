@@ -18,6 +18,7 @@ namespace Quad_and_KD_Trees
         public bool shapeType = true;
         public bool collidingPoints = false;
         public bool movingPoints = false;
+        public bool enableWindowBoundry = false;
         public bool varyingPointSize = false;
 
         private List<Keyboard.Key> _keys = new List<Keyboard.Key>();

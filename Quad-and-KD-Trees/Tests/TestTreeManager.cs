@@ -10,7 +10,7 @@ namespace Quad_and_KD_Trees
     class TestTreeManager
     {
         public TreeManager treeManager = new TreeManager();
-        public int testTime = 1;
+        public int testTime = 60;
         public string consoleText = "";
 
         public static int NumOfTests = 2;
@@ -36,11 +36,22 @@ namespace Quad_and_KD_Trees
 
         private RenderWindow _window;
 
+        //Tree tests
+        private NoTreeTest _noTreeTest;
+        private QuadTreeTest _quadTreeTest;
+        private KDTreeTest _kdTreeTest;
 
-        public TestTreeManager(RenderWindow pWindow, TreeManager.TreeMode pTreeToStart)
+
+        public TestTreeManager(RenderWindow pWindow, TreeManager.TreeMode pTreeToStart, TestMode pTestToStart)
         {
             _window = pWindow;
             treeManager.treeMode = pTreeToStart;
+            testMode = pTestToStart;
+
+            //TestTrees
+            _noTreeTest = new NoTreeTest();
+            _quadTreeTest = new QuadTreeTest((Vector2f)_window.Size);
+            _kdTreeTest = new KDTreeTest();
 
             //overite / create data files
             string fileTilte = "TreeTester Data\n";
@@ -55,7 +66,7 @@ namespace Quad_and_KD_Trees
             //initialize test set
             if (GetTestNumber() == -1)
             {
-                SetTreeMode(treeManager.treeMode);
+                setTreeMode(treeManager.treeMode);
 
                 //title dataset
                 using (StreamWriter sw = File.AppendText(GetTestDataFilePath()))
@@ -63,34 +74,44 @@ namespace Quad_and_KD_Trees
                     sw.WriteLine($"{treeManager.treeMode.ToString()} {testMode.ToString()}");
                 }
             }
+
+            switch (treeManager.treeMode)
+            {
+                case TreeManager.TreeMode.NoTree:
+                    testTreeUpdate(pGameTime, _noTreeTest);
+                    break;
+
+                case TreeManager.TreeMode.QuadTree:
+                    testTreeUpdate(pGameTime, _quadTreeTest);
+                    break;
+
+                case TreeManager.TreeMode.KDTree:
+                    testTreeUpdate(pGameTime, _kdTreeTest);
+                    break;
+            }
         }
 
-        private void SetTreeMode(TreeManager.TreeMode pTreemode)
+        private void testTreeUpdate(GameTime pGameTime, TreeTest pTreeTest)
         {
-            //check if we 
-
-            switch (testMode)
+            if (pTreeTest.TestID != GetTestNumber())
             {
-                case TestMode.CollisionTest:
-                    _pointTestNumber = 0;
+                updateTreeManager();
 
-                    //set test settings
-                    treeManager = new TreeManager();
-                    treeManager.treeMode = pTreemode;
-                    treeManager.collidingPoints = true;
-                    treeManager.movingPoints = true;
-                    consoleText = "Collision Test";
-                    break;
-                case TestMode.CapacityTest:
-                    _treeCapacityTestNumber = 0;
+                //start new test
+                pTreeTest.InitializeTest(GetTestNumber(), testTime, treeManager, GetPointGenerator());
+            }
 
-                    //set test settings
-                    treeManager = new TreeManager();
-                    treeManager.treeMode = pTreemode;
-                    treeManager.collidingPoints = true;
-                    treeManager.movingPoints = true;
-                    consoleText = "Capacity Test";
-                    break;
+            //update current test
+            pTreeTest.Update(pGameTime, _window);
+
+            //check test status
+            if (pTreeTest.TestCompleate)
+            {
+                //write results to file
+                pTreeTest.WriteTestStatsToFile(GetTestDataFilePath(), GetTestValue());
+
+                //tell the testTreeManager we cave compleated a test
+                TestCompleate();
             }
         }
 
@@ -119,13 +140,6 @@ namespace Quad_and_KD_Trees
                     {
                         //move to next test
                         testMode += 1;
-
-                        //END TESTS 
-                        //IMPLEMENT CAPACITYTEST
-                        if (testMode == TestMode.CapacityTest)
-                        { 
-                            _window.Close();
-                        }
                     }
                 }
                 else
@@ -176,17 +190,24 @@ namespace Quad_and_KD_Trees
 
         public PointGenerator GetPointGenerator()
         {
+            int pPointCount;
+            Vector2i pSpawnArea;
             switch (testMode)
             {
                 case TestMode.CollisionTest:
-                    int pPointCount = GetTestValue();
-                    Vector2i pSpawnArea = getSpawnArea();
+                    pPointCount = GetTestValue();
+                    pSpawnArea = getSpawnArea();
                     _pointGenerator = new PointGenerator(pPointCount);
                     _pointGenerator.GenerateRandomPoints(pSpawnArea);
                     _pointGenerator.UpdateUserData(Color.Red, treeManager.varyingPointSize);
                     return _pointGenerator;
                 case TestMode.CapacityTest:
-                    break;
+                    pPointCount = 1000;
+                    pSpawnArea = getSpawnArea();
+                    _pointGenerator = new PointGenerator(pPointCount);
+                    _pointGenerator.GenerateRandomPoints(pSpawnArea);
+                    _pointGenerator.UpdateUserData(Color.Red, treeManager.varyingPointSize);
+                    return _pointGenerator;
                 default:
                     break;
             }
@@ -196,6 +217,62 @@ namespace Quad_and_KD_Trees
         public string GetTestDataFilePath()
         {
             return _testDataFilePaths[(int)testMode];
+        }
+
+        public void DrawTrees(GameTime pGameTime)
+        {
+            _noTreeTest.Draw(_window);
+            _quadTreeTest.Draw(_window);
+            _kdTreeTest.Draw(_window);
+        }
+
+        private void setTreeMode(TreeManager.TreeMode pTreemode)
+        {
+            switch (testMode)
+            {
+                case TestMode.CollisionTest:
+                    _pointTestNumber = 0;
+
+                    //set test settings
+                    treeManager = new TreeManager();
+                    treeManager.treeMode = pTreemode;
+                    treeManager.collidingPoints = true;
+                    treeManager.movingPoints = true;
+                    treeManager.enableWindowBoundry = true;
+                    consoleText = "Collision Test";
+                    break;
+                case TestMode.CapacityTest:
+                    _treeCapacityTestNumber = 0;
+
+                    //set test settings
+                    treeManager = new TreeManager();
+                    treeManager.treeMode = pTreemode;
+                    treeManager.collidingPoints = true;
+                    treeManager.movingPoints = true;
+                    treeManager.enableWindowBoundry = true;
+                    consoleText = "Capacity Test";
+                    break;
+            }
+        }
+
+        private void updateTreeManager()
+        {
+            switch (testMode)
+            {
+                case TestMode.CollisionTest:
+                    break;
+                case TestMode.CapacityTest:
+                    if (treeManager.treeMode == TreeManager.TreeMode.NoTree)
+                    {
+                        //if we are on the no tree we do not need to go though all the capacity tests
+                        setTestNumber(GetNumberOfTests() - 1);
+                    }
+                    else
+                    {
+                        treeManager.treeCapacity = (uint)GetTestValue();
+                    }
+                    break;
+            }
         }
 
         private void setTestNumber(int pNewTestNumber)
@@ -224,6 +301,5 @@ namespace Quad_and_KD_Trees
             }
             return _pointSpawnArea;
         }
-
     }
 }

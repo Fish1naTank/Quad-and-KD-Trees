@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
@@ -125,11 +126,16 @@ namespace Quad_and_KD_Trees
             _points.Add(new Point(pPosition));
         }
 
-        public void MovePoints(GameTime pGameTime, RenderWindow pWindow)
+        public void MovePoints(GameTime pGameTime, RenderWindow pWindow, bool pEnableWindowBoundry)
         {
-            foreach(Point p in _points)
+            foreach(Point p in _points.ToList())
             {
-                p.Move(pGameTime, pWindow);
+                p.Move(pGameTime, pWindow, pEnableWindowBoundry);
+
+                if(p.outOfScreen)
+                {
+                    _points.Remove(p);
+                }
             }
         }
 

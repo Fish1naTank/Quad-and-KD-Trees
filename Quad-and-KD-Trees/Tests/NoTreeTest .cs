@@ -12,7 +12,7 @@ namespace Quad_and_KD_Trees
         {
             TestCompleate = true;
             TestID = -1;
-            _testStartTime = -1;
+            _testTime = -1;
         }
 
         public override void InitializeTest(int pTestID, float pTestDurration, TreeManager pTreeManager, PointGenerator pPointGenerator)
@@ -31,15 +31,12 @@ namespace Quad_and_KD_Trees
             //stop if the test is over
             if (TestCompleate) return;
 
-            //start timer
-            if (_testStartTime < 0) _testStartTime = pGameTime.TotalTimeElapesd;
-
             //run test
             #region //////////TESTS///////////
             //movePoints
             if (_treeManager.movingPoints)
             {
-                _pointGenerator.MovePoints(pGameTime, pWindow);
+                _pointGenerator.MovePoints(pGameTime, pWindow, _treeManager.enableWindowBoundry);
             }
 
             //collision
@@ -54,10 +51,12 @@ namespace Quad_and_KD_Trees
             #endregion
 
             //trackFPS
-            fpsTracker.UpdateCumulativeMovingAverageFPS(1 /pGameTime.DeltaTime);
+            fpsTracker.UpdateCumulativeMovingAverageFPS(1 / pGameTime.DeltaTime);
 
+            //count updates
+            _testTime += 1;
             //check if test is over
-            if (pGameTime.TotalTimeElapesd - _testStartTime > _testDuration)
+            if (_testTime > _testDuration)
             {
                 //mark test as compleate
                 resetTestTree();
@@ -84,7 +83,7 @@ namespace Quad_and_KD_Trees
         {
             TestCompleate = true;
             TestID = -1;
-            _testStartTime = -1;
+            _testTime = -1;
             _testDuration = -1;
             _treeManager = null;
             _pointGenerator = null;

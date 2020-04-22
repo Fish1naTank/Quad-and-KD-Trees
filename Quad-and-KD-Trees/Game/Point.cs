@@ -9,6 +9,7 @@ namespace Quad_and_KD_Trees
     {
         public Vector2f position;
         public bool colliding = false;
+        public bool outOfScreen = false;
         public Shape userData;
 
         private Vector2f _moveDirection = new Vector2f(0,0);
@@ -23,11 +24,11 @@ namespace Quad_and_KD_Trees
             position = pPosition;
         }
 
-        public void Move(GameTime pGameTime, RenderWindow pWindow)
+        public void Move(GameTime pGameTime, RenderWindow pWindow, bool pEnableWindowBoundry)
         {
             position += _moveDirection * pGameTime.DeltaTime;
 
-            outOfScreen(pWindow);
+            checkOutOfScreen(pWindow, pEnableWindowBoundry);
         }
 
         public Boundry Boundry()
@@ -89,7 +90,7 @@ namespace Quad_and_KD_Trees
 
         public void SetRandomMoveDirection(Random pRand)
         {
-            double s = 100 * pRand.NextDouble();
+            double s = 100 * pRand.NextDouble() + 10;
             double a = (Math.PI * 2) * pRand.NextDouble();
             double x = s * Math.Cos(a);
             double y = s * Math.Sin(a);
@@ -103,30 +104,45 @@ namespace Quad_and_KD_Trees
             return pMyBounds.Intersects(pOther.Boundry());
         }
 
-        private void outOfScreen(RenderWindow pWindow)
+        private void checkOutOfScreen(RenderWindow pWindow, bool pEnableWindowBoundry)
         {
             Boundry boundry = Boundry();
 
-            if (position.X + boundry.size.X > pWindow.Size.X)
+            if (pEnableWindowBoundry)
             {
-                position.X = pWindow.Size.X - boundry.size.X;
-                _moveDirection.X *= -1;
-            }
-            else if (position.X - boundry.size.X < 0)
-            {
-                position.X = 0 + boundry.size.X;
-                _moveDirection.X *= -1;
-            }
+                if (position.X + boundry.size.X > pWindow.Size.X)
+                {
+                    position.X = pWindow.Size.X - boundry.size.X;
+                    _moveDirection.X *= -1;
+                }
+                else if (position.X - boundry.size.X < 0)
+                {
+                    position.X = 0 + boundry.size.X;
+                    _moveDirection.X *= -1;
+                }
 
-            if (position.Y + boundry.size.Y > pWindow.Size.Y)
-            {
-                position.Y = pWindow.Size.Y - boundry.size.Y;
-                _moveDirection.Y *= -1;
+                if (position.Y + boundry.size.Y > pWindow.Size.Y)
+                {
+                    position.Y = pWindow.Size.Y - boundry.size.Y;
+                    _moveDirection.Y *= -1;
+                }
+                else if (position.Y - boundry.size.Y < 0)
+                {
+                    position.Y = 0 + boundry.size.Y;
+                    _moveDirection.Y *= -1;
+                }
             }
-            else if (position.Y - boundry.size.Y < 0)
+            else
             {
-                position.Y = 0 + boundry.size.Y;
-                _moveDirection.Y *= -1;
+                if (!outOfScreen)
+                {
+                    if (position.X - boundry.size.X > pWindow.Size.X || position.X + boundry.size.X < 0
+                        || position.Y - boundry.size.Y > pWindow.Size.Y || position.Y + boundry.size.Y < 0)
+                    {
+                        //mark for removal
+                        outOfScreen = true;
+                    }
+                }
             }
         }
 
