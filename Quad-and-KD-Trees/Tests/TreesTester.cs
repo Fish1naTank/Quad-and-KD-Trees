@@ -30,7 +30,7 @@ namespace Quad_and_KD_Trees
 
         public override void Initialize()
         {
-            _testTreeManager = new TestTreeManager(window, TreeManager.TreeMode.NoTree, TestTreeManager.TestMode.CapacityTest);
+            _testTreeManager = new TestTreeManager(window, TreeManager.TreeMode.NoTree, TestTreeManager.TestMode.CollisionTest);
         }
 
         public override void Update(GameTime pGameTime)

@@ -97,6 +97,9 @@ namespace Quad_and_KD_Trees
             {
                 updateTreeManager();
 
+                //update the point generator
+                SetPointGenerator();
+
                 //start new test
                 pTreeTest.InitializeTest(GetTestNumber(), testTime, treeManager, GetPointGenerator());
             }
@@ -188,7 +191,7 @@ namespace Quad_and_KD_Trees
             return 0;
         }
 
-        public PointGenerator GetPointGenerator()
+        public void SetPointGenerator()
         {
             int pPointCount;
             Vector2i pSpawnArea;
@@ -200,18 +203,23 @@ namespace Quad_and_KD_Trees
                     _pointGenerator = new PointGenerator(pPointCount);
                     _pointGenerator.GenerateRandomPoints(pSpawnArea);
                     _pointGenerator.UpdateUserData(Color.Red, treeManager.varyingPointSize);
-                    return _pointGenerator;
+                    break;
+
                 case TestMode.CapacityTest:
                     pPointCount = 1000;
                     pSpawnArea = getSpawnArea();
                     _pointGenerator = new PointGenerator(pPointCount);
                     _pointGenerator.GenerateRandomPoints(pSpawnArea);
                     _pointGenerator.UpdateUserData(Color.Red, treeManager.varyingPointSize);
-                    return _pointGenerator;
+                    break;
                 default:
                     break;
             }
-            return null;
+        }
+
+        public PointGenerator GetPointGenerator()
+        {
+            return _pointGenerator;
         }
 
         public string GetTestDataFilePath()

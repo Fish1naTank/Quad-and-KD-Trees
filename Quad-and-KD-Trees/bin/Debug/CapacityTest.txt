@@ -1,15 +1,45 @@
 TreeTester Data
 NoTree CapacityTest
-NoTree, 20, 7.316781
+NoTree, 20, 8.20588
 QuadTree CapacityTest
-QuadTree, 1, 14.86434
-QuadTree, 2, 17.17251
-QuadTree, 3, 19.03137
-QuadTree, 4, 19.72889
-QuadTree, 5, 20.3672
-QuadTree, 6, 20.92805
-QuadTree, 7, 20.81286
-QuadTree, 8, 20.74754
-QuadTree, 9, 20.43925
-QuadTree, 10, 20.45134
-QuadTree, 11, 20.09962
+QuadTree, 1, 26.61609
+QuadTree, 2, 36.04094
+QuadTree, 3, 43.73765
+QuadTree, 4, 49.6604
+QuadTree, 5, 52.36753
+QuadTree, 6, 53.63008
+QuadTree, 7, 54.18647
+QuadTree, 8, 53.51537
+QuadTree, 9, 52.02933
+QuadTree, 10, 50.6694
+QuadTree, 11, 51.08178
+QuadTree, 12, 50.27888
+QuadTree, 13, 49.45021
+QuadTree, 14, 47.49052
+QuadTree, 15, 47.2009
+QuadTree, 16, 48.4278
+QuadTree, 17, 47.08767
+QuadTree, 18, 46.65463
+QuadTree, 19, 46.28483
+QuadTree, 20, 45.62486
+KDTree CapacityTest
+KDTree, 1, 9.899851
+KDTree, 2, 10.20268
+KDTree, 3, 10.3414
+KDTree, 4, 10.77315
+KDTree, 5, 10.73637
+KDTree, 6, 10.8037
+KDTree, 7, 10.83397
+KDTree, 8, 10.88046
+KDTree, 9, 10.98076
+KDTree, 10, 11.10568
+KDTree, 11, 11.04348
+KDTree, 12, 11.03195
+KDTree, 13, 11.0144
+KDTree, 14, 10.99882
+KDTree, 15, 11.01614
+KDTree, 16, 11.10034
+KDTree, 17, 11.0624
+KDTree, 18, 11.18061
+KDTree, 19, 11.12823
+KDTree, 20, 11.12004

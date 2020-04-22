@@ -11,13 +11,13 @@ namespace Quad_and_KD_Trees
         public static void Main(string[] args)
         {
             //uncomment for game
-            /**
+            /**/
             TreesGame treesGame = new TreesGame();
             treesGame.Run();
             /**/
 
             //uncomment for tests
-            /**/
+            /**
             TreesTester treeTester = new TreesTester();
             treeTester.Run();
             /**/
