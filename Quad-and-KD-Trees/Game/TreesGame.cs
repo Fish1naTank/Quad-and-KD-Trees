@@ -9,7 +9,7 @@ using System.Linq;
 //Controls
 //    KEYBOARD:                                      MOUSE:
 // Space : clear screen                         // LMB : draw point
-// Num0  : no tree                              // RMB : draw points
+// Num0  : no tree                              // RMB : draw points every frame
 // Num1  : QuadTree Mode            
 // Num2  : KDTree Mode              
 // Num3  : drawMode point             
