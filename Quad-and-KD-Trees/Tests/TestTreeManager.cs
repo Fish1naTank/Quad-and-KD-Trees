@@ -15,7 +15,6 @@ namespace Quad_and_KD_Trees
 
         public static int NumOfTests = 2;
         public enum TestMode { CollisionTest, CapacityTest }
-        //starting test
         public TestMode testMode = TestMode.CollisionTest;
 
         //these are in the order of the tests above
@@ -33,6 +32,7 @@ namespace Quad_and_KD_Trees
 
         private int[] _treeCapacitySizes = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 };
         private int _treeCapacityTestNumber = -1;
+        private int _treeCapacityPointCount = 500;
 
         private RenderWindow _window;
 
@@ -206,7 +206,7 @@ namespace Quad_and_KD_Trees
                     break;
 
                 case TestMode.CapacityTest:
-                    pPointCount = 1000;
+                    pPointCount = _treeCapacityPointCount;
                     pSpawnArea = getSpawnArea();
                     _pointGenerator = new PointGenerator(pPointCount);
                     _pointGenerator.GenerateRandomPoints(pSpawnArea);
