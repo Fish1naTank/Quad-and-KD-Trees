@@ -6,7 +6,7 @@ Check the git wiki: https://github.com/Fish1naTank/Quad-and-KD-Trees/wiki
 //	  MOUSE:
 // LMB : draw point
 // RMB : draw points every update
-
+ 
 //    KEYBOARD:
 // Space : clear screen
 // Num0  : no tree
