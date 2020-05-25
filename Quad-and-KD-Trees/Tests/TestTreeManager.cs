@@ -9,6 +9,8 @@ namespace Quad_and_KD_Trees
 {
     class TestTreeManager
     {
+        public int seed = 849;
+
         public TreeManager treeManager = new TreeManager();
         public int testTime = 60;
         public string consoleText = "";
@@ -26,13 +28,15 @@ namespace Quad_and_KD_Trees
 
         //Test Values
         private int[] _pointAmmountToTest = new int[] { 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600 };
+        //private int[] _pointAmmountToTest = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
         //smol test
         //private int[] _pointAmmountToTest = new int[] { 100 };
         private int _pointTestNumber = -1;
 
         private int[] _treeCapacitySizes = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 };
         private int _treeCapacityTestNumber = -1;
-        private int _treeCapacityPointCount = 500;
+        private int _treeCapacityPointCount = 1000;
+        //private int _treeCapacityPointCount = 10;
 
         private RenderWindow _window;
 
@@ -143,6 +147,9 @@ namespace Quad_and_KD_Trees
                     {
                         //move to next test
                         testMode += 1;
+
+                        //resete tree
+                        treeManager.treeMode = 0;
                     }
                 }
                 else
@@ -201,7 +208,7 @@ namespace Quad_and_KD_Trees
                     pPointCount = GetTestValue();
                     pSpawnArea = getSpawnArea();
                     _pointGenerator = new PointGenerator(pPointCount);
-                    _pointGenerator.GenerateRandomPoints(pSpawnArea);
+                    _pointGenerator.GenerateRandomPoints(pSpawnArea, seed);
                     _pointGenerator.UpdateUserData(Color.Red, treeManager.varyingPointSize);
                     break;
 
@@ -209,7 +216,7 @@ namespace Quad_and_KD_Trees
                     pPointCount = _treeCapacityPointCount;
                     pSpawnArea = getSpawnArea();
                     _pointGenerator = new PointGenerator(pPointCount);
-                    _pointGenerator.GenerateRandomPoints(pSpawnArea);
+                    _pointGenerator.GenerateRandomPoints(pSpawnArea, seed);
                     _pointGenerator.UpdateUserData(Color.Red, treeManager.varyingPointSize);
                     break;
                 default:

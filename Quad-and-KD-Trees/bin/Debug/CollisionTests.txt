@@ -1,6 +1,0 @@
-TreeTester Data
-NoTree CollisionTest
-NoTree, 100, 138.6074
-NoTree, 200, 106.5537
-NoTree, 300, 54.0726
-NoTree, 400, 31.41733

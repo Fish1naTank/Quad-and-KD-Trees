@@ -88,14 +88,24 @@ namespace Quad_and_KD_Trees
             return size;
         }
 
-        public void SetRandomMoveDirection(Random pRand)
+        public void SetRandomMoveDirection(int seed = -1)
         {
-            double s = 100 * pRand.NextDouble() + 10;
-            double a = (Math.PI * 2) * pRand.NextDouble();
-            double x = s * Math.Cos(a);
-            double y = s * Math.Sin(a);
+            Random rand;
+            if(seed != -1)
+            {
+                rand = new Random(seed);
+            }
+            else
+            {
+                rand = new Random();
+            }
 
-            _moveDirection = new Vector2f((float)x, (float)y);
+            double s = 100 * rand.NextDouble() + 10;
+            double a = (Math.PI * 2) * rand.NextDouble();
+            float x = (float)(s * Math.Cos(a));
+            float y = (float)(s * Math.Sin(a));
+
+            _moveDirection = new Vector2f(x, y);
         }
 
         private bool overlapHighlight(Boundry pMyBounds, Point pOther)

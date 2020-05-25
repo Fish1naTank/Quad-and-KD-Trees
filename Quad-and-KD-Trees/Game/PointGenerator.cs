@@ -17,6 +17,7 @@ namespace Quad_and_KD_Trees
         private List<Point> _points = new List<Point>();
 
         private Random _rand = new Random();
+        private int _seed = -1;
 
         public PointGenerator(int pPointCount)
         {
@@ -40,11 +41,16 @@ namespace Quad_and_KD_Trees
 
         public void UpdateUserData(Color pColor, bool pVaryingSize = false)
         {
+            if(_seed != -1)
+            {
+                _rand = new Random(_seed);
+            }
+
             foreach (Point p in _points)
             {
                 if (p.userData == null)
                 {
-                    p.SetRandomMoveDirection(_rand);
+                    p.SetRandomMoveDirection(_rand.Next(0, 999));
 
                     if (shapeType == true)
                     {
@@ -94,9 +100,15 @@ namespace Quad_and_KD_Trees
             }
         }
 
-        public void GenerateRandomPoints(Vector2i pSpawnRange)
+        public void GenerateRandomPoints(Vector2i pSpawnRange, int seed = -1)
         {
             DestroyPoints();
+
+            if (seed != -1)
+            {
+                _seed = seed;
+                _rand = new Random(_seed);
+            }
 
             for (int i = 0; i < _points.Capacity; i++)
             {
