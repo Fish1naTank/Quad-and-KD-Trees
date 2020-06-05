@@ -2,10 +2,10 @@
 
 Check the git wiki: https://github.com/Fish1naTank/Quad-and-KD-Trees/wiki
 
-//Controls
-//	  MOUSE:
-// LMB : draw point
-// RMB : draw points every update
+//Controls\n
+//	  MOUSE:\n
+// LMB : draw point\n
+// RMB : draw points every update\n
  
 //    KEYBOARD:
 // Space : clear screen
